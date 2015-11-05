@@ -1,0 +1,39 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/library/math.html
+    https://docs.python.org/3/whatsnew/3.0.html
+
+=============================
+=  README for ex1: Hello Turtle
+=============================
+
+usage: python3 hello_turtle.py
+       python3 math_print.py
+
+==================
+=  Description:  =
+==================
+
+hello_turtle.py draws 3 flowers using the Turtle module.
+
+math_pring.py shows some of the math module functions.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		This file
+hello_turtle.py     Contains parts 1-4 of the exercise and shows the usage of Turtle module and basic function implementation.
+math_print.py       Contains part 5 of the exercise and shows the usage of basic math module functions.
+
+======================
+=  Special Comments  =
+======================
+ The two differences (but not only ones) between Python 2.x and 3.x are:
+ a.  print statement is now the print() function in Python 3.x
+ b.  There's no longer a type long, it has been replaced by int (Although it acts just as long).

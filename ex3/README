@@ -1,0 +1,46 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/
+
+=============================
+=  README for ex2: Conditionals
+=============================
+
+An exercise to practice conditional programming paradigms.
+
+==================
+=  Description:  =
+==================
+
+calculate_mathematical_epression.py - Converts a math expression string into numeric value and calculates it.
+
+convert_spoon_to_cup.py - Converts number of spoons into number of cups they will fit in.
+
+largest_and_smallest.py - Accepts 3 numbers and then returns which one is the largest and which is the smallest.
+
+quadratic_equation.py - Calculates the solution(s) of given equation and prints it\them to the standard output.
+
+shapes.py - Calcualtes the area of different shapes.
+
+bmi.py - Checks is if the wizard is intelligent enough based on his spell/hour stat and wand length.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		This file
+calculate_mathematical_epression.py Contains question 2 and 3
+convert_spoon_to_cup.py Contains question 1
+largest_and_smallest.py Contains question 4
+quadratic_equation.py Contains question 5 and 6
+shapes.py Contains question 7
+bmi.py Contains question 8
+
+======================
+=  Special Comments  =
+======================

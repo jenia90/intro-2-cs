@@ -1,0 +1,29 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+=============================
+=  README for ex0: Hello  =
+=============================
+
+usage: python3 hello.py
+
+==================
+=  Description:  =
+==================
+
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		This file
+hello.py    	Contains the main method. Prints "Hello World!" to the screen.
+...
+
+
+======================
+=  Special Comments  =
+======================
