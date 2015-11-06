@@ -5,17 +5,16 @@
 # DESCRIPTION: Calculates the value of given quadratic equation.
 #####################################################################
 
-import operator
 
 def create_list():
     str_input = []
     while True:
-        usr_input = input()
+        str_element = input()
 
-        if usr_input == "":
+        if str_element == "":
             return str_input
         else:
-            str_input.append(usr_input)
+            str_input.append(str_element)
 
 
 def concat_list(lst_str):
@@ -35,13 +34,8 @@ def avr(num_list):
 
 
 def cyclic(lst1, lst2):
-    if len(lst1) != len(lst2):
-        return None
-    elif lst1 == lst2:
-        return True
-
     for i in range(len(lst1)):
-        if lst2 == list_shift(lst1, i):
+        if lst2 == (lst1[i:] + lst1[:i]) or lst2 == lst1:
             return True
         else:
             continue
@@ -49,12 +43,22 @@ def cyclic(lst1, lst2):
     return False
 
 
-def list_shift(lst, steps):
-    new_lst = lst
-    for i in range(len(lst)):
-        new_lst[i] = lst[(i + int(steps)) % len(lst)]
+def hist(list_num, n):
+    ret_lst = [0] * n
 
-    return new_lst
+    for i in range(n):
+        for l in list_num:
+            if l == i:
+                ret_lst[i] += 1
+
+    return ret_lst
 
 
-print(cyclic([1, 2, 3, 4, 5], [2, 3, 4, 5, 1]))
+def fact(n):
+     # TODO: finish function implementation
+
+
+print(fact(1))
+
+# print(hist([3,5, 1,2,4,5,6,1,4,5,2,4], 6))
+# print(cyclic(['a', 'b', 'c'], ['c', 'a', 'c']))
