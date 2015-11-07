@@ -6,40 +6,34 @@ I discussed the exercise with: no one.
 
 To answer the questions I used to following sources:
     https://docs.python.org/3/
+    https://en.wikipedia.org/wiki/
 
 =============================
-=  README for ex2: Conditionals
+=  README for ex3: Loops
 =============================
 
-An exercise to practice conditional programming paradigms.
+An exercise to practice loops, lists and variables.
 
 ==================
 =  Description:  =
 ==================
 
-calculate_mathematical_epression.py - Converts a math expression string into numeric value and calculates it.
-
-convert_spoon_to_cup.py - Converts number of spoons into number of cups they will fit in.
-
-largest_and_smallest.py - Accepts 3 numbers and then returns which one is the largest and which is the smallest.
-
-quadratic_equation.py - Calculates the solution(s) of given equation and prints it\them to the standard output.
-
-shapes.py - Calcualtes the area of different shapes.
-
-bmi.py - Checks is if the wizard is intelligent enough based on his spell/hour stat and wand length.
+ex3.py - Contains the following:
+            a) create_list function that creates a list of strings inputted by the user.
+            b) concat_list function that concatenates a list of strings.
+            c) avr function that calculates the average of a list of floats.
+            d) cyclic function checks of one list is the cyclic rotation of the other.
+            e) hist function returns the histogram of a given list of numbers.
+            f) fact function returns the factorization of a given number.
+            g) cart function returns the Cartesian product of 2 given lists.
+            h) pair function returns pairs of numbers from the passed the list which sum equals to n.
 
 =============================
 =  List of submitted files: =
 =============================
 
 README		This file
-calculate_mathematical_epression.py Contains question 2 and 3
-convert_spoon_to_cup.py Contains question 1
-largest_and_smallest.py Contains question 4
-quadratic_equation.py Contains question 5 and 6
-shapes.py Contains question 7
-bmi.py Contains question 8
+ex3.py      Contains all of the function implementations
 
 ======================
 =  Special Comments  =
