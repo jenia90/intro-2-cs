@@ -50,7 +50,7 @@ def avr(num_list):
 
 def cyclic(lst1, lst2):
     """
-    Checks if the first list is cyclic formatation of the second list
+    Checks if the first list is cyclic shift of the second list
     :param lst1: First list
     :param lst2: Second List
     :return: Returns True if yes otherwise returns False
@@ -104,13 +104,13 @@ def cart(lst1, lst2):
     :param lst2: Second list
     :return: Returns a list of pairs in the Cartesian product
     """
-    cart_mult = []
+    cart_prod = []
 
     for f in lst1:
         for s in lst2:
-            cart_mult.append([f, s])  # Adds the pair to the list
+            cart_prod.append([f, s])  # Adds the pair to the list
 
-    return cart_mult
+    return cart_prod
 
 
 def pair(n, num_list):
@@ -123,10 +123,9 @@ def pair(n, num_list):
     pairs = []
 
     for i in num_list:
-        for j in num_list:
-            if i + j == n and num_list.index(i) != num_list.index(j):  # Checks if the sum equals to n
-                pairs.append([i, j])                                    # also checks if its not the same number
-        num_list.remove(i)  # Removes the number from the list so it won't appear again
+        for j in num_list[num_list.index(i)+1:]:  # starts the list at the next index after i to remove duplicates
+            if i + j == n:  # Checks if the sum equals to n
+                pairs.append([i, j])
 
     if len(pairs) == 0:  # Checks if list of pairs equals to 0 if yes, returns None
         return None
