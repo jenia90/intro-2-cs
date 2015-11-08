@@ -123,10 +123,9 @@ def pair(n, num_list):
     pairs = []
 
     for i in num_list:
-        for j in num_list:
-            if i + j == n and num_list.index(i) != num_list.index(j):  # Checks if the sum equals to n
-                pairs.append([i, j])                                    # also checks if its not the same number
-        num_list.remove(i)  # Removes the number from the list so it won't appear again
+        for j in num_list[num_list.index(i)+1:]:  # starts the list at the next index after i to remove duplicates
+            if i + j == n:  # Checks if the sum equals to n
+                pairs.append([i, j])
 
     if len(pairs) == 0:  # Checks if list of pairs equals to 0 if yes, returns None
         return None
