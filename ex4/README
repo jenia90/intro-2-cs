@@ -1,0 +1,40 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/
+    https://en.wikipedia.org/wiki/
+
+=============================
+=  README for ex3: Loops
+=============================
+
+An exercise to practice loops, lists and variables.
+
+==================
+=  Description:  =
+==================
+
+ex3.py - Contains the following:
+            a) create_list function that creates a list of strings inputted by the user.
+            b) concat_list function that concatenates a list of strings.
+            c) avr function that calculates the average of a list of floats.
+            d) cyclic function checks of one list is the cyclic rotation of the other.
+            e) hist function returns the histogram of a given list of numbers.
+            f) fact function returns the factorization of a given number.
+            g) cart function returns the Cartesian product of 2 given lists.
+            h) pair function returns pairs of numbers from the passed the list which sum equals to n.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		This file
+ex3.py      Contains all of the function implementations
+
+======================
+=  Special Comments  =
+======================
