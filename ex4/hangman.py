@@ -58,14 +58,48 @@ def run_single_game(words_list):
                 user_msg = DEFAULT_MSG
 
         elif user_input[0] == HINT:
-            pass
-            # TODO
-
-        elif user_input[0] == PLAY_AGAIN:
-            pass
-            # TODO
+            hint_letter = choose_letter(filter_words_list(wrong_guess_lst, words_list, pattern), pattern)
+            display_state(pattern, error_count, wrong_guess_lst, HINT_MSG + hint_letter)
 
     display_state(pattern, error_count, wrong_guess_lst, user_msg, True)
+
+
+def filter_words_list(wrong_guess_lst, words, pattern):
+    """
+    Filters the word list to give more precise hints to the user
+    :param wrong_guess_lst: list of wrong letters the user already tried
+    :param words: list of words to filter through
+    :param pattern: the pattern shown to the user
+    :return: returns the update word list
+    """
+    filtered_word_lst = []  # creates an empty list to hold the filtered words
+
+    for word in words:
+        if len(word) == len(pattern):  # check if the word and pattern are the same length
+            for l in word:  # these next few lines check if each of the letters are in the pattern or wrong guess list
+                if l not in pattern and l not in wrong_guess_lst:
+                    filtered_word_lst.append(word)  # appends the filtered words to the list
+
+    return filtered_word_lst
+
+
+def choose_letter(words, pattern):
+    letter_dict = {}
+    chosen_letter = ''
+    count = 0
+    for word in words:
+        for l in word:
+            if l not in pattern:
+                if l not in letter_dict.keys():
+                    letter_dict[l] = 0
+                else:
+                    letter_dict[l] += 1
+    for item in letter_dict.keys():
+        if count < letter_dict[item]:
+            count = letter_dict[item]
+            chosen_letter = item
+
+    return chosen_letter
 
 
 def main():
