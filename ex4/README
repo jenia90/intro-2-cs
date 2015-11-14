@@ -6,34 +6,34 @@ I discussed the exercise with: no one.
 
 To answer the questions I used to following sources:
     https://docs.python.org/3/
-    https://en.wikipedia.org/wiki/
+    http://www.regexr.com/
 
 =============================
-=  README for ex3: Loops
+=  README for ex4: Hangman
 =============================
 
-An exercise to practice loops, lists and variables.
+An exercise to practice loops, lists and dictionaries.
 
 ==================
 =  Description:  =
 ==================
 
-ex3.py - Contains the following:
-            a) create_list function that creates a list of strings inputted by the user.
-            b) concat_list function that concatenates a list of strings.
-            c) avr function that calculates the average of a list of floats.
-            d) cyclic function checks of one list is the cyclic rotation of the other.
-            e) hist function returns the histogram of a given list of numbers.
-            f) fact function returns the factorization of a given number.
-            g) cart function returns the Cartesian product of 2 given lists.
-            h) pair function returns pairs of numbers from the passed the list which sum equals to n.
+hangman.py - A simple hangman game where a user is given a word pattern and he\she has to guess the word behind it.
+             The user has 7 wrong guess when after each wrong guess the image of a stick man is added with another limb.
+             The player has unlimited number of hints at his disposal. In case he didn't guess the word an message
+             appears telling him he lost and shows the original word. If he does guess the word a message appears saying
+             he won. Also in cases where he guess a wrong character or a letter which he tried before an error message
+             appears.
 
 =============================
 =  List of submitted files: =
 =============================
 
-README		This file
-ex3.py      Contains all of the function implementations
+README		        This file
+hangman.py          Contains the main game logic
+hangman_helper.py   Contains all sorts of "behind the scenes" helper functions (mainly GUI stuff)
+hangman[0-6].png    Seven image files which are changed with each wrong guess
+words.txt           Contains all the words from which one will be chosen randomly for the game
 
 ======================
 =  Special Comments  =
