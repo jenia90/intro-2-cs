@@ -9,6 +9,8 @@
 from hangman_helper import *
 
 UNDERSCORE = '_'
+INPUT_TYPE = 0
+INPUT_VALUE = 1
 
 
 def update_word_pattern(word, pattern, letter):
@@ -51,6 +53,7 @@ def filter_words_list(words, pattern, wrong_guess_lst):
     """
     filtered_lst = []
 
+    # loops through word list and appends the relevant to the returned variable
     for word in words:
         if len(pattern) == len(word) and match_pattern_to_word(pattern, word) \
                and not is_in_wrong_guess_list_filter(word, wrong_guess_lst):
@@ -82,13 +85,14 @@ def choose_letter(words, pattern):
     """
     letter_dict = dict()    # creates a dictionary which will hold all the letters
 
-    for word in words:  # this block of code goes through all the words and creates a dictionary
-        for l in word:      # of all the letters in them
-            if l not in pattern and len(word) == len(pattern):
-                if l in letter_dict.keys():
-                    letter_dict[l] += 1
+    # this block of code goes through all the words and creates a dictionary of all the letters in them
+    for word in words:
+        for letter in word:
+            if letter not in pattern and len(word) == len(pattern):
+                if letter in letter_dict.keys():
+                    letter_dict[letter] += 1
                 else:
-                    letter_dict[l] = 0
+                    letter_dict[letter] = 0
 
     return find_letter_with_most_occurances(letter_dict)
 
@@ -102,13 +106,15 @@ def find_letter_with_most_occurances(letter_dict):
     chosen_letter_value = 0  # temporary variable to hold the maximum amount of times a letter appears
     chosen_letter = ''  # hold the letter which will be returned to the player
 
-    for l in letter_dict.keys():
-        if letter_dict[l] > chosen_letter_value:
-            chosen_letter_value = letter_dict[l]
-            chosen_letter = l
+    # loops through all the letters in the dictionary and checks which appears the most
+    for letter in letter_dict.keys():
+        if letter_dict[letter] > chosen_letter_value:
+            chosen_letter_value = letter_dict[letter]
+            chosen_letter = letter
 
-        elif letter_dict[l] == chosen_letter_value == 0:  # this condition is for the special case when each letter
-            chosen_letter = l                                   # appears once
+        # this condition is for the special case when each letter appears once
+        elif letter_dict[letter] == chosen_letter_value == 0:
+            chosen_letter = letter
 
     return chosen_letter
 
@@ -118,38 +124,47 @@ def run_single_game(words_list):
     Runs single instance of Hangman: The Game
     :param words_list: list of words from which a random one will be chosen for the game
     """
-    word = get_random_word(words_list)
-    pattern = UNDERSCORE * len(word)
-    error_count = 0
-    wrong_guess_lst = []
-    user_msg = DEFAULT_MSG
+    word = get_random_word(words_list)  # gets random word from the list
+    pattern = UNDERSCORE * len(word)    # create the word pattern to be shown during the game
+    error_count = 0  # initializes the error counter
+    wrong_guess_lst = []  # creates a list to hold the wrong guessed letters
+    user_msg = DEFAULT_MSG  # assigns the defaults message which will be shown to the user
 
     display_state(pattern, error_count, wrong_guess_lst, user_msg)
 
-    while UNDERSCORE in pattern and error_count < MAX_ERRORS:
-        user_input = get_input()
+    # runs the game until the error counter reaches the maximum number of error (usually 7)
+    while error_count < MAX_ERRORS:
+        user_input = get_input()  # gets user input
 
-        if user_input[0] == LETTER:  # block of code to check validity of user input
-            if len(user_input[1]) > 1 or not user_input[1].islower():  # checks if single lower case letter was inputted
+        # block of code to check validity of user input
+        if user_input[INPUT_TYPE] == LETTER:
+            # checks if single lower case letter was inputted
+            if len(user_input[INPUT_VALUE]) > 1 or not user_input[INPUT_VALUE].islower():
                 user_msg = NON_VALID_MSG
 
-            elif user_input[1] in wrong_guess_lst or user_input[1] in pattern:  # checks if letter was inputted before
-                user_msg = ALREADY_CHOSEN_MSG + user_input[1]
+            # checks if letter was inputted before
+            elif user_input[INPUT_VALUE] in wrong_guess_lst or user_input[INPUT_VALUE] in pattern:
+                user_msg = ALREADY_CHOSEN_MSG + user_input[INPUT_VALUE]
 
-            elif user_input[1] in word:  # if letter is valid updates the pattern and in case the word was guessed
-                pattern = update_word_pattern(word, pattern, user_input[1])         # stops the game
+            # updates the pattern and in case the word was guessed completely stops the game and shows WIN_MSG
+            elif user_input[INPUT_VALUE] in word:
+                pattern = update_word_pattern(word, pattern, user_input[INPUT_VALUE])
                 user_msg = DEFAULT_MSG
                 if pattern == word:
                     break
 
-            else:   # if wrong guess adds the letter to the wrong guess list and increments the error counter
-                wrong_guess_lst.append(user_input[1])
+            # if wrong guess adds the letter to the wrong guess list and increments the error counter
+            else:
+                wrong_guess_lst.append(user_input[INPUT_VALUE])
                 error_count += 1
+                if error_count == MAX_ERRORS:
+                    break
                 user_msg = DEFAULT_MSG
 
             display_state(pattern, error_count, wrong_guess_lst, user_msg)  # updates GUI
 
-        elif user_input[0] == HINT:  # if asked for a hint gets the most common letter and shows it to the user
+        # if asked for a hint gets the most common letter and shows it to the user
+        elif user_input[INPUT_TYPE] == HINT:
             hint_letter = choose_letter(filter_words_list(words_list, pattern, wrong_guess_lst), pattern)
             display_state(pattern, error_count, wrong_guess_lst, HINT_MSG + hint_letter)
 
@@ -165,16 +180,17 @@ def main():
     Function that is called when we run the script.
     It initiates the game and passes the word list to the game engine.
     """
-    words_list = load_words()
+    words_list = load_words('words.txt')    # loads a list of words to be used during the game
     run_single_game(words_list)
+    user_input = get_input()
+    while user_input[INPUT_TYPE] == PLAY_AGAIN:
 
-    while True:
-        usr_inpt = get_input()
-        if usr_inpt[0] == PLAY_AGAIN:
-            if usr_inpt[1]:
-                run_single_game(words_list)
-            else:
-                break
+        if user_input[INPUT_VALUE]:
+            run_single_game(words_list)
+        else:
+            break
+
+        user_input = get_input()
 
 
 if __name__ == "__main__":
