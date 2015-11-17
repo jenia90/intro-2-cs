@@ -22,7 +22,7 @@ store_db = {'59907': {'ManufacturerName': 'מעדנות בע"מ',
       'ItemPrice': '7.20', 'PriceUpdateDate': '2013-12-31 07:28',
       'UnitOfMeasure': 'ליטר', 'ItemName': 'קוקה קולה בקבוק 1.5 ליטר'}}
 
-
+"""
 def get_demo_store():
     '''
     loads a demo store into the program
@@ -50,6 +50,8 @@ def get_demo_store():
       'ItemPrice': '7.20', 'PriceUpdateDate': '2013-12-31 07:28',
       'UnitOfMeasure': 'ליטר', 'ItemName': 'קוקה קולה בקבוק 1.5 ליטר'}}
     return (store_id, store_db)
+"""
+
 
 def get_attribute(store_db, ItemCode, tag):
     '''
@@ -67,7 +69,7 @@ def string_item(item):
     Returns a string in the format of '[ItemCode] (ItemName)'
 
     '''
-    return item["ItemCode"] + "\t" + item["ItemName"]
+    return '[' + item["ItemCode"] + ']\t{' + item["ItemName"] + '}'
 
 # print(string_item(store_db["59907"]))
   
@@ -79,7 +81,12 @@ def string_store_items(store_db):
     string representation of item1
     string representation of item2
     '''
-    pass
+    store_items_lst = ''
+
+    for item in store_db.keys():
+        store_items_lst += string_item(store_db[item]) + '\n'
+
+    return store_items_lst
 
 
 def read_prices_file(filename):
@@ -93,7 +100,17 @@ def read_prices_file(filename):
     values smaller  dictionaries mapping attribute names to their values.
     Important attributes include 'ItemCode', 'ItemName', and 'ItemPrice'
     '''
-    pass
+    tree = ET.parse(filename)
+    root = tree.getroot()
+    item_dict = dict()
+
+    for node in root:
+        item_dict[node] = node.tag
+        if node.tag == 'Items':
+            for items in node:
+                # TODO: Finish XML parsing
+
+    return item_dict
 
 
 def filter_store(store_db, filter_txt):  
