@@ -1,4 +1,4 @@
-from ex5 import *
+import ex5
 from tkinter import filedialog
 from tkinter import *
 import sys
@@ -138,10 +138,12 @@ class ex5GUI:
         and print its output to the screen
         '''
         item_idx = self.store_idx_GUI.get()-1
-        try:   
+        try: 
+            
             filename = filedialog.askopenfilename(**self.file_xml_opt)
             if filename:
-                [store, db] = read_prices_file(filename)
+                
+                [store, db] = ex5.read_prices_file(filename) 
                 self.add_store_to_DB_GUI(store, db, item_idx)
         except:
             print("error in read_prices_file")
@@ -164,7 +166,7 @@ class ex5GUI:
         and update the store frame with its output
         '''
         for store_ix in range(MAX_STORES):
-            self.item_list[store_ix] = filter_store(self.DB_list[store_ix],
+            self.item_list[store_ix] = ex5.filter_store(self.DB_list[store_ix],
                     self.filter_entry.get())
             assert type(self.item_list[store_ix]) == dict, \
                     "filter didn't return a dictionary"
@@ -184,10 +186,9 @@ class ex5GUI:
         else:
             self.store_name_label.config(text="Empty store",
                     font="TkDefaultFont 14 bold")
-
         self.store_items_panel.delete('1.0', END)
         try:
-            txt = string_store_items(db)
+            txt = ex5.string_store_items(db)
             if self.sys == 'linux':
                 txt = self.right_to_left(txt)
             ix = txt.index(']')
@@ -251,16 +252,16 @@ class ex5GUI:
         counts_GUI = [0]*MAX_STORES
 
         for store_ix in range(MAX_STORES):
-            self.basket_list[store_ix] = get_basket_prices(
+            self.basket_list[store_ix] = ex5.get_basket_prices(
                     self.DB_list[store_ix], self.basket)
             try:
                 prices_GUI[store_ix], counts_GUI[store_ix] = \
-                        sum_basket(self.basket_list[store_ix])
+                        ex5.sum_basket(self.basket_list[store_ix])
             except:
                 prices_GUI[store_ix] = 0
                 counts_GUI[store_ix] = 0
 
-        best_GUI = best_basket(self.basket_list)
+        best_GUI = ex5.best_basket(self.basket_list)
         return (prices_GUI, counts_GUI, best_GUI)
 
 
@@ -269,9 +270,16 @@ class ex5GUI:
         Calls the user function create_basket_from_txt
         update the basket based on its output
         '''
-        selectedItems = self.store_items_panel.selection_get()
-        self.basket.extend(create_basket_from_txt(selectedItems))
-        self.print_basket()
+        try:
+            selectedItems = self.store_items_panel.selection_get()
+        except:
+            print("no text was selected")
+            return
+        try:
+            self.basket.extend(ex5.create_basket_from_txt(selectedItems))
+            self.print_basket()
+        except:
+            print("error in create_basket_from_txt")
 
 
     def add_basket_from_file_GUI(self):
@@ -283,7 +291,7 @@ class ex5GUI:
         try:
             filename = filedialog.askopenfilename(**self.file_txt_opt)
             if filename:
-                self.basket = load_basket(filename)
+                self.basket = ex5.load_basket(filename)
         except:
             print("error in load_basket")
             
@@ -297,7 +305,7 @@ class ex5GUI:
         try:
             filename = filedialog.asksaveasfilename(**self.file_txt_opt)
             if filename:
-                save_basket(self.basket, filename)
+                ex5.save_basket(self.basket, filename)
         except:
             print("error in save_basket")
 
@@ -323,13 +331,17 @@ class ex5GUI:
 
     def print_basket(self):
         '''print the baskets table in the basket canvas'''
+        self.print_basket_names()
+        if not self.basket:
+            return
 
         self.refresh_basket()
         prices, counts, best_ix = self.get_prices_counts_best_GUI()
-        self.print_basket_names()
+        
         # print the different items in the basket
         for item_ix, item in enumerate(self.basket):
-            item_name = basket_item_name(self.DB_list, self.basket[item_ix])
+            item_name = ex5.basket_item_name(self.DB_list, 
+                                self.basket[item_ix])
             if item_name:
                 if self.sys == 'linux':
                     item_name = self.right_to_left(item_name)
