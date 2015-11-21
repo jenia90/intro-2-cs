@@ -128,8 +128,6 @@ def get_basket_prices(store_db, basket):
         else:
             basket_prices.append(float(get_attribute(store_db, basket[item_index], 'ItemPrice')))
 
-    # basket_prices = [float(get_attribute(store_db, item, 'ItemPrice')) for item in basket]
-
     return basket_prices
 
 def sum_basket(price_list):
@@ -139,7 +137,16 @@ def sum_basket(price_list):
       and the number of missing items (Number of Nones)
 
     '''
-    pass 
+    sum_price_list = 0
+    missing_items = 0
+
+    for price in price_list:
+        if not price:
+            missing_items += 1
+        else:
+            sum_price_list += price
+
+    return sum_price_list, missing_items
 
  
 def basket_item_name(stores_db_list, ItemCode): 
@@ -148,22 +155,31 @@ def basket_item_name(stores_db_list, ItemCode):
       dictionaries)
     Find the first store in the list that contains the item and return its
     string representation (as in string_item())
-    If the item is not avaiable in any of the stores return only [ItemCode]
+    If the item is not available in any of the stores return only [ItemCode]
 
     '''
-    pass
+    for store_db in stores_db_list:
+        if ItemCode in store_db:
+            return string_item(store_db[ItemCode])
+
+    return '[' + ItemCode + ']'
 
 
 def save_basket(basket, filename):
     ''' 
     Save the basket into a file
-    The basket reresentation in the file will be in the following format:
+    The basket representation in the file will be in the following format:
     [ItemCode1] 
     [ItemCode2] 
     ...
     [ItemCodeN]
     '''
-    pass
+    f = open(filename, 'w')
+
+    for item in basket:
+        f.writelines(item + '\n')
+
+    f.close()
 
 
 def load_basket(filename):
@@ -175,7 +191,7 @@ def load_basket(filename):
     ...
     [ItemCodeN]
     '''
-    pass
+    return [line.rstrip() for line in open(filename)]
  
 
 def best_basket(list_of_price_list):
