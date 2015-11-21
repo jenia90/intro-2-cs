@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
+import re
 
-store_db = {'59907': {'ManufacturerName': 'מעדנות בע"מ',
+demo_db = {'59907': {'ManufacturerName': 'מעדנות בע"מ',
       'ManufactureCountry': 'IL', 'Quantity': '500.00','ItemCode': '59907',
       'ItemPrice': '26.10', 'PriceUpdateDate': '2014-07-22 08:09',
       'UnitOfMeasure': '100 גרם', 'ItemName': 'פיצה משפחתית'},
@@ -22,35 +23,6 @@ store_db = {'59907': {'ManufacturerName': 'מעדנות בע"מ',
       'ItemPrice': '7.20', 'PriceUpdateDate': '2013-12-31 07:28',
       'UnitOfMeasure': 'ליטר', 'ItemName': 'קוקה קולה בקבוק 1.5 ליטר'}}
 
-"""
-def get_demo_store():
-    '''
-    loads a demo store into the program
-    '''
-    store_id = '001'
-    store_db = {'59907': {'ManufacturerName': 'מעדנות בע"מ',
-      'ManufactureCountry': 'IL', 'Quantity': '500.00','ItemCode': '59907',
-      'ItemPrice': '26.10', 'PriceUpdateDate': '2014-07-22 08:09',
-      'UnitOfMeasure': '100 גרם', 'ItemName': 'פיצה משפחתית'},
-      '66196': {'ManufacturerName': 'אסם',
-      'ManufactureCountry': 'IL', 'Quantity':
-      '200.00', 'ItemCode': '66196', 'ItemPrice': '3.80',
-      'PriceUpdateDate': '2015-05-19 08:34',
-      'UnitOfMeasure': '100 גרם', 'ItemName': 'ביסלי גריל'},
-      '30794': {'ManufacturerName': 'תנובה',
-      'ManufactureCountry': 'IL', 'Quantity': '1.00',  'ItemCode': '30794',
-      'ItemPrice': '10.90', 'PriceUpdateDate': '2013-12-08 13:48',
-      'UnitOfMeasure': 'ליטר', 'ItemName': 'משקה סויה'},
-      '13520': {'ManufacturerName': 'יוניליוור',
-      'ManufactureCountry': 'IL', 'Quantity': '75.00', 'ItemCode': '13520',
-      'ItemPrice': '4.90', 'PriceUpdateDate': '2015-07-07 08:26',
-      'UnitOfMeasure': '100 גרם', 'ItemName': 'קליק קורנפלקס'},
-      '84316': {'ManufacturerName': 'החברה המרכזית לייצור משקאות',
-      'ManufactureCountry': 'IL', 'Quantity': '1.50', 'ItemCode': '84316',
-      'ItemPrice': '7.20', 'PriceUpdateDate': '2013-12-31 07:28',
-      'UnitOfMeasure': 'ליטר', 'ItemName': 'קוקה קולה בקבוק 1.5 ליטר'}}
-    return (store_id, store_db)
-"""
 
 
 def get_attribute(store_db, ItemCode, tag):
@@ -61,7 +33,6 @@ def get_attribute(store_db, ItemCode, tag):
     '''
     return store_db[ItemCode][tag]
 
-# print(get_attribute(get_demo_store()[1], '59907', "ManufactureCountry"))
 
 def string_item(item):
     '''
@@ -71,8 +42,6 @@ def string_item(item):
     '''
     return '[' + item["ItemCode"] + ']\t{' + item["ItemName"] + '}'
 
-# print(string_item(store_db["59907"]))
-  
 
 def string_store_items(store_db):
     '''
@@ -81,12 +50,10 @@ def string_store_items(store_db):
     string representation of item1
     string representation of item2
     '''
-    store_items_lst = ''
+    if not store_db:
+        return ''
 
-    for item in store_db.keys():
-        store_items_lst += string_item(store_db[item]) + '\n'
-
-    return store_items_lst
+    return '\n'.join(string_item(store_db[item]) for item in store_db.keys()).strip()
 
 
 def read_prices_file(filename):
@@ -99,30 +66,36 @@ def read_prices_file(filename):
     The keys in this db will be ItemCodes of the different items and the
     values smaller  dictionaries mapping attribute names to their values.
     Important attributes include 'ItemCode', 'ItemName', and 'ItemPrice'
+    :param filename: XML database file of a store
+    :return: returns a tuple of StoreId and the database dictionary
     '''
     tree = ET.parse(filename)
     root = tree.getroot()
-    item_dict = dict()
+    store_db = {}
 
-    for node in root:
-        item_dict[node] = node.tag
-        if node.tag == 'Items':
-            for items in node:
-                # TODO: Finish XML parsing
+    # iterates through all XML nodes and finds the relevant ones and then adds them to the store_db dictionary
+    for items in root.findall('Items'):
+        store_db = {item.find('ItemCode').text:
+                    {attrib.tag: attrib.text for attrib in item}
+                    for item in items.findall('Item')}
 
-    return item_dict
+    return root.find('StoreId').text, store_db
 
 
-def filter_store(store_db, filter_txt):  
-    '''
-    Create a new dictionary that includes only the items 
+def filter_store(store_db, filter_txt):
+    """
+    Create a new dictionary that includes only the items
     that were filtered by user.
-    I.e. items that text given by the user is part of their ItemName. 
+    I.e. items that text given by the user is part of their ItemName.
     Args:
     store_db: a dictionary of dictionaries as created in read_prices_file.
     filter_txt: the filter text as given by the user.
-    '''
-    pass
+    :param filter_txt:
+    :param store_db:
+    :return:
+    """
+    return {item['ItemCode']: item
+            for item in store_db.values() if filter_txt in item['ItemName']}
 
 
 def create_basket_from_txt(basket_txt): 
@@ -132,7 +105,9 @@ def create_basket_from_txt(basket_txt):
     Returns a basket- list of ItemCodes that were included in basket_txt
 
     '''
-    pass
+
+    return [item_code.strip('[]')
+            for item_code in re.findall(re.compile(r"\[\d*\]"), basket_txt)]
 
 
 def get_basket_prices(store_db, basket):
@@ -145,8 +120,17 @@ def get_basket_prices(store_db, basket):
       its price will be None.
 
     '''
-    pass
+    basket_prices = []
 
+    for item_index in range(len(basket)):
+        if basket[item_index] not in store_db:
+            basket_prices.append(None)
+        else:
+            basket_prices.append(float(get_attribute(store_db, basket[item_index], 'ItemPrice')))
+
+    # basket_prices = [float(get_attribute(store_db, item, 'ItemPrice')) for item in basket]
+
+    return basket_prices
 
 def sum_basket(price_list):
     '''

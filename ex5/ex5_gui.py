@@ -188,12 +188,14 @@ class ex5GUI:
                     font="TkDefaultFont 14 bold")
         self.store_items_panel.delete('1.0', END)
         try:
+
             txt = ex5.string_store_items(db)
-            if self.sys == 'linux':
-                txt = self.right_to_left(txt)
-            ix = txt.index(']')
-            self.store_items_panel.insert(END, txt[:ix])    
-            self.store_items_panel.insert(END, txt[ix:])
+            if txt:
+                if self.sys == 'linux':
+                    txt = self.right_to_left(txt)
+                ix = txt.index(']')
+                self.store_items_panel.insert(END, txt[:ix])    
+                self.store_items_panel.insert(END, txt[ix:])
         except:
             print("error in string_store_items")
         self.print_basket()
@@ -250,10 +252,12 @@ class ex5GUI:
         '''
         prices_GUI = [0]*MAX_STORES
         counts_GUI = [0]*MAX_STORES
-
+        
         for store_ix in range(MAX_STORES):
+            
             self.basket_list[store_ix] = ex5.get_basket_prices(
                     self.DB_list[store_ix], self.basket)
+            
             try:
                 prices_GUI[store_ix], counts_GUI[store_ix] = \
                         ex5.sum_basket(self.basket_list[store_ix])
@@ -273,13 +277,17 @@ class ex5GUI:
         try:
             selectedItems = self.store_items_panel.selection_get()
         except:
-            print("no text was selected")
             return
         try:
             self.basket.extend(ex5.create_basket_from_txt(selectedItems))
-            self.print_basket()
         except:
             print("error in create_basket_from_txt")
+        try:
+            self.print_basket()
+        except:
+            print("error in get_basket_prices or another function"+ 
+                " that you didn't implement yet (q7-q12)")
+        
 
 
     def add_basket_from_file_GUI(self):
@@ -292,12 +300,15 @@ class ex5GUI:
             filename = filedialog.askopenfilename(**self.file_txt_opt)
             if filename:
                 self.basket = ex5.load_basket(filename)
+                if self.basket is None: self.basket =[] # in case load basket return None
+                self.print_basket()
         except:
             print("error in load_basket")
+
             
            
 
-        self.print_basket()
+        
 
 
     def save_basket_to_file_GUI(self):
@@ -333,9 +344,8 @@ class ex5GUI:
         '''print the baskets table in the basket canvas'''
         self.print_basket_names()
         if not self.basket:
-            return
-
-        self.refresh_basket()
+            return    
+        self.refresh_basket() 
         prices, counts, best_ix = self.get_prices_counts_best_GUI()
         
         # print the different items in the basket
