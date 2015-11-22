@@ -191,8 +191,11 @@ def load_basket(filename):
     ...
     [ItemCodeN]
     '''
-    return [line.rstrip() for line in open(filename)]
- 
+    with open(filename) as file:
+        basket = [line.rstrip() for line in file]
+
+    return basket
+
 
 def best_basket(list_of_price_list):
     '''
@@ -201,5 +204,17 @@ def best_basket(list_of_price_list):
     Returns the cheapest store (index of the cheapest list) given that a 
     missing item has a price of its maximal price in the other stores *1.25
 
-    ''' 
-    pass
+    '''
+    basket_prices = []
+    for lst in range(len(list_of_price_list)):
+        basket_price = 0
+        for index in range(len(list_of_price_list[lst])):
+            if list_of_price_list[lst][index]:
+                basket_price += list_of_price_list[lst][index]
+            else:
+                basket_price += max(list_of_price_list[(lst+1)%3][index], list_of_price_list[(lst+2)%3][index]) * 1.25
+        basket_prices.append(basket_price)
+    return basket_prices.index(min(basket_prices))
+
+
+# print(best_basket([[5.0,2.0,8.0],[6.0,None,3.0],[None, 4.0,6.0]]))
