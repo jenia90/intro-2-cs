@@ -1,0 +1,35 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/
+    http://regexr.com/
+    Apress Pro Python 2nd Edition
+
+=============================
+=  README for ex5: Food basket comparison
+=============================
+
+A simple program to compare prices from different stores
+
+==================
+=  Description:  =
+==================
+
+This program reads official store DB in XML format and then let's the user to compare the combined basket price from
+3 different stores. It also allows the user to save\load the current basket for later use.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		        This file
+AUTHORS             List of people who worked on this app.
+ex5.py              Contains BI logic of the program
+
+======================
+=  Special Comments  =
+======================

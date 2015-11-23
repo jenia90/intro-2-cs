@@ -1,28 +1,18 @@
+#######################################################################
+#  FILE: hangman.py
+#  WRITER : yevgeni, jenia90, 320884216
+#  EXERCISE : intro2cs ex5 2015-2016
+#  DESCRIPTION : A simple program to compare prices from different stores
+#
+#######################################################################
+
 import xml.etree.ElementTree as ET
 import re
 
-demo_db = {'59907': {'ManufacturerName': 'מעדנות בע"מ',
-      'ManufactureCountry': 'IL', 'Quantity': '500.00','ItemCode': '59907',
-      'ItemPrice': '26.10', 'PriceUpdateDate': '2014-07-22 08:09',
-      'UnitOfMeasure': '100 גרם', 'ItemName': 'פיצה משפחתית'},
-      '66196': {'ManufacturerName': 'אסם',
-      'ManufactureCountry': 'IL', 'Quantity':
-      '200.00', 'ItemCode': '66196', 'ItemPrice': '3.80',
-      'PriceUpdateDate': '2015-05-19 08:34',
-      'UnitOfMeasure': '100 גרם', 'ItemName': 'ביסלי גריל'},
-      '30794': {'ManufacturerName': 'תנובה',
-      'ManufactureCountry': 'IL', 'Quantity': '1.00',  'ItemCode': '30794',
-      'ItemPrice': '10.90', 'PriceUpdateDate': '2013-12-08 13:48',
-      'UnitOfMeasure': 'ליטר', 'ItemName': 'משקה סויה'},
-      '13520': {'ManufacturerName': 'יוניליוור',
-      'ManufactureCountry': 'IL', 'Quantity': '75.00', 'ItemCode': '13520',
-      'ItemPrice': '4.90', 'PriceUpdateDate': '2015-07-07 08:26',
-      'UnitOfMeasure': '100 גרם', 'ItemName': 'קליק קורנפלקס'},
-      '84316': {'ManufacturerName': 'החברה המרכזית לייצור משקאות',
-      'ManufactureCountry': 'IL', 'Quantity': '1.50', 'ItemCode': '84316',
-      'ItemPrice': '7.20', 'PriceUpdateDate': '2013-12-31 07:28',
-      'UnitOfMeasure': 'ליטר', 'ItemName': 'קוקה קולה בקבוק 1.5 ליטר'}}
-
+MAX_VALUE_FINE = 1.25
+ITEM_CODE_TAG = 'ItemCode'
+ITEM_PRICE_TAG = 'ItemPrice'
+ITEM_NAME_TAG = 'ItemName'
 
 
 def get_attribute(store_db, ItemCode, tag):
@@ -40,7 +30,7 @@ def string_item(item):
     Returns a string in the format of '[ItemCode] (ItemName)'
 
     '''
-    return '[' + item["ItemCode"] + ']\t{' + item["ItemName"] + '}'
+    return '[' + item[ITEM_CODE_TAG] + ']\t{' + item[ITEM_NAME_TAG] + '}'
 
 
 def string_store_items(store_db):
@@ -53,7 +43,7 @@ def string_store_items(store_db):
     if not store_db:
         return ''
 
-    return '\n'.join(string_item(store_db[item]) for item in store_db.keys()).strip()
+    return ''.join(string_item(store_db[item]) + '\n' for item in store_db)
 
 
 def read_prices_file(filename):
@@ -75,7 +65,7 @@ def read_prices_file(filename):
 
     # iterates through all XML nodes and finds the relevant ones and then adds them to the store_db dictionary
     for items in root.findall('Items'):
-        store_db = {item.find('ItemCode').text:
+        store_db = {item.find(ITEM_CODE_TAG).text:
                     {attrib.tag: attrib.text for attrib in item}
                     for item in items.findall('Item')}
 
@@ -94,8 +84,8 @@ def filter_store(store_db, filter_txt):
     :param store_db:
     :return:
     """
-    return {item['ItemCode']: item
-            for item in store_db.values() if filter_txt in item['ItemName']}
+    return {item[ITEM_CODE_TAG]: item
+            for item in store_db.values() if filter_txt in item[ITEM_NAME_TAG]}
 
 
 def create_basket_from_txt(basket_txt): 
@@ -126,7 +116,7 @@ def get_basket_prices(store_db, basket):
         if basket[item_index] not in store_db:
             basket_prices.append(None)
         else:
-            basket_prices.append(float(get_attribute(store_db, basket[item_index], 'ItemPrice')))
+            basket_prices.append(float(get_attribute(store_db, basket[item_index], ITEM_PRICE_TAG)))
 
     return basket_prices
 
@@ -177,7 +167,7 @@ def save_basket(basket, filename):
     f = open(filename, 'w')
 
     for item in basket:
-        f.writelines(item + '\n')
+        f.writelines('[' + item + ']' + '\n')
 
     f.close()
 
@@ -192,10 +182,18 @@ def load_basket(filename):
     [ItemCodeN]
     '''
     with open(filename) as file:
-        basket = [line.rstrip() for line in file]
+        basket = [line.rstrip().strip('[]') for line in file]
 
     return basket
 
+
+def check_if_other_value_is_none(frst_lst_value, scnd_lst_value):
+    if not frst_lst_value:
+        return scnd_lst_value * MAX_VALUE_FINE
+    elif not scnd_lst_value:
+        return frst_lst_value * MAX_VALUE_FINE
+    else:
+        return max(frst_lst_value, scnd_lst_value) * MAX_VALUE_FINE
 
 def best_basket(list_of_price_list):
     '''
@@ -207,14 +205,13 @@ def best_basket(list_of_price_list):
     '''
     basket_prices = []
     for lst in range(len(list_of_price_list)):
-        basket_price = 0
+        current_basket_price = 0
         for index in range(len(list_of_price_list[lst])):
             if list_of_price_list[lst][index]:
-                basket_price += list_of_price_list[lst][index]
+                current_basket_price += list_of_price_list[lst][index]
             else:
-                basket_price += max(list_of_price_list[(lst+1)%3][index], list_of_price_list[(lst+2)%3][index]) * 1.25
-        basket_prices.append(basket_price)
+                current_basket_price += check_if_other_value_is_none(list_of_price_list[(lst+1)%3][index],
+                                                                     list_of_price_list[(lst+2)%3][index])
+        basket_prices.append(current_basket_price)
+
     return basket_prices.index(min(basket_prices))
-
-
-# print(best_basket([[5.0,2.0,8.0],[6.0,None,3.0],[None, 4.0,6.0]]))
