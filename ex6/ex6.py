@@ -1,8 +1,10 @@
 import math
+import sys
 
 RED_INDEX = 0
 GREEN_INDEX = 1
 BLUE_INDEX = 2
+
 HEIGHT = 0
 WIDTH = 1
 
@@ -49,9 +51,9 @@ def get_piece(image, upper_left, size):
     """
     new_img = [2]
 
-    for row in range(size[0]):
+    for row in range(size[HEIGHT]):
         if image[row]:
-            for column in range(size[1]):
+            for column in range(size[WIDTH]):
                 if image[row][column]:
                     new_img[HEIGHT].append(image.size[HEIGHT] + size[HEIGHT] - 1)
                 else:
@@ -64,10 +66,42 @@ def get_piece(image, upper_left, size):
 
 
 def set_piece(image, upper_left, piece):
-    pass
+    """
+    replaces part of the original image with a smaller image piece matching by color
+    :param image: original image as list of lists (height,width)
+    :param upper_left: starting position of the upper left corner of the new image piece
+    :param piece: the piece that would be placed inside the original image
+    """
+    for row in range(piece[HEIGHT]):
+        if image[row]:
+            for column in range(piece[WIDTH]):
+                if image[row][column]:
+                    image[upper_left[HEIGHT] + row][upper_left[WIDTH] + column] = piece[HEIGHT][WIDTH]
+                else:
+                    break
+        else:
+            break
+
 
 def average(image):
-    pass
+    """
+    calculates the average each color in the RGB color scheme of the image
+    :param image: image to process
+    :return: returns a tuple of the average RGB values (red, green, blue)
+    """
+    red_amount = 0
+    green_amount = 0
+    blue_amount = 0
+
+    for row in range(image.size[HEIGHT]):
+        for column in range(image.size[WIDTH]):
+            red_amount += image[row][column][RED_INDEX]
+            green_amount += image[row][column][GREEN_INDEX]
+            blue_amount += image[row][column][BLUE_INDEX]
+
+    return (red_amount / (image.size[HEIGHT] * image.size[WIDTH])), \
+           (green_amount / (image.size[HEIGHT] * image.size[WIDTH])), \
+           (blue_amount / (image.size[HEIGHT] * image.size[WIDTH]))
 
 
 def preprocess_tiles(tiles):
@@ -84,3 +118,10 @@ def choose_tile(piece, tiles):
 
 def make_mosaic(image, tiles, num_candidates):
     pass
+
+
+def main(*args):
+    pass
+
+if __name__ == '__main__':
+    main(sys.argv)
