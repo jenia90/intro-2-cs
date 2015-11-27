@@ -29,12 +29,13 @@ def compare(image1, image2):
     :return: returns the RGB distance between the 2 images
     """
     distance = 0
+    height, width = image1.size
 
-    for row in range(image1.size[0]):
+    for row in range(height):
         if image2[row]:
-            for column in range(image1.size[1]):
-                if image2[row][column]:
-                    distance += compare_pixel(image1[row][column], image2[row][column])
+            for column in range(width):
+                if image2[row, column]:
+                    distance += compare_pixel(image1[row, column], image2[row, column])
                 else:
                     break
 
@@ -49,20 +50,21 @@ def get_piece(image, upper_left, size):
     :param size: size of the slice
     :return: returns the slice as list of lists of pixels (height, width)
     """
-    new_img = [2]
+    piece = [2]
+    height, width = image.size
 
     for row in range(size[HEIGHT]):
         if image[row]:
             for column in range(size[WIDTH]):
                 if image[row][column]:
-                    new_img[HEIGHT].append(image.size[HEIGHT] + size[HEIGHT] - 1)
+                    piece[HEIGHT].append(height + size[HEIGHT] - 1)
                 else:
                     break
-            new_img[WIDTH].append(image.size[WIDTH] + size[WIDTH] - 1)
+            piece[WIDTH].append(width + size[WIDTH] - 1)
         else:
             break
 
-    return new_img
+    return piece
 
 
 def set_piece(image, upper_left, piece):
@@ -72,11 +74,13 @@ def set_piece(image, upper_left, piece):
     :param upper_left: starting position of the upper left corner of the new image piece
     :param piece: the piece that would be placed inside the original image
     """
-    for row in range(piece[HEIGHT]):
+    height, width = piece.size
+
+    for row in range(height):
         if image[row]:
-            for column in range(piece[WIDTH]):
+            for column in range(width):
                 if image[row][column]:
-                    image[upper_left[HEIGHT] + row][upper_left[WIDTH] + column] = piece[HEIGHT][WIDTH]
+                    image[upper_left[HEIGHT] + row][upper_left[WIDTH] + column] = piece[HEIGHT, WIDTH]
                 else:
                     break
         else:
@@ -93,35 +97,74 @@ def average(image):
     green_amount = 0
     blue_amount = 0
 
-    for row in range(image.size[HEIGHT]):
-        for column in range(image.size[WIDTH]):
-            red_amount += image[row][column][RED_INDEX]
-            green_amount += image[row][column][GREEN_INDEX]
-            blue_amount += image[row][column][BLUE_INDEX]
+    height, width = image.size
+    resolution =  height * width
 
-    return (red_amount / (image.size[HEIGHT] * image.size[WIDTH])), \
-           (green_amount / (image.size[HEIGHT] * image.size[WIDTH])), \
-           (blue_amount / (image.size[HEIGHT] * image.size[WIDTH]))
+    for row in range(height):
+        for column in range(width):
+            red_amount += image[row, column][RED_INDEX]
+            green_amount += image[row, column][GREEN_INDEX]
+            blue_amount += image[row, column][BLUE_INDEX]
+
+    return red_amount / resolution, green_amount / resolution, blue_amount / resolution
 
 
 def preprocess_tiles(tiles):
-    pass
+    """
+    converts list of tiles (images) into a list containing tuple of their RGB value averages
+    :param tiles: list of tiles (images)
+    :return: list of tuples in (red, green, blue) format
+    """
+    return [average(tile) for tile in tiles]
 
 
 def get_best_tiles(objective, tiles, averages , num_candidates):
-    pass
+    """
+    creates a list size of num_candidates of best tile matches to the original image
+    :param objective: the original image
+    :param tiles: list of tiles to check
+    :param averages: list of tile color averages as tuple (red, green, blue)
+    :param num_candidates: number of tiles to choose
+    :return: returns a list of matched tiles
+    """
+    candidate_tiles = []
+    deviation = [0, 0, 0]
+    original_average = average(objective)
+
+    while len(candidate_tiles) < num_candidates:
+        for i in range(len(averages)):
+            if [int(original_average[color] - averages[i][color]) for color in range(3)] == deviation:
+                candidate_tiles.append(tiles[i])
+
+        deviation = [value + 1 for value in deviation]
+
+    return candidate_tiles
 
 
 def choose_tile(piece, tiles):
-    pass
+    return min([compare(tile, piece) for tile in tiles])
 
 
 def make_mosaic(image, tiles, num_candidates):
-    pass
+    height_tile, width_tile = tiles[0].size
+    height_image, width_image = image.size
+    last_position = [0, 0]
+    mosaic = image
+    best_tiles = get_best_tiles(image, tiles, preprocess_tiles(tiles), num_candidates)
+
+    for row in range(int(height_image / height_tile)):
+        for column in range(int(width_image / width_tile)):
+            best_tile = choose_tile(get_piece(image, last_position, [height_tile, width_tile]), best_tiles)
+            set_piece(mosaic, last_position, best_tile)
+            last_position += height_tile, width_tile
+
+    return mosaic
 
 
-def main(*args):
-    pass
+def main(args):
+    with open(args[3], 'w') as file:
+        file = make_mosaic(args[1], args[2], int(args[4]))
+
 
 if __name__ == '__main__':
     main(sys.argv)
