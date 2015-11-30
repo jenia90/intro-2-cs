@@ -33,15 +33,12 @@ def compare_pixel(pixel1, pixel2):
     :param pixel2: tuple containing the RGB value of the second pixel
     :return: returns the color difference of the pixels
     """
-    '''
     result = 0
 
     for color in range(3):
         result += math.fabs(pixel1[color] - pixel2[color])
-    '''
-    return math.fabs(pixel1[RED_INDEX] - pixel2[RED_INDEX]) + \
-           math.fabs(pixel1[GREEN_INDEX] - pixel2[GREEN_INDEX]) + \
-           math.fabs(pixel1[BLUE_INDEX] - pixel2[BLUE_INDEX])
+
+    return result
 
 
 def compare(image1, image2):
@@ -52,16 +49,13 @@ def compare(image1, image2):
     :return: returns the RGB distance between the 2 images
     """
     distance = 0
-    height, width = get_image_size(image1)
+    height1, width1 = get_image_size(image1)
+    height2, width2 = get_image_size(image2)
+    # logging.warning(str(image1) + '\t' + str(image2))
 
-    for row in range(height):
-        if image2[row]:
-            for column in range(width):
-                if image2[row][column]:
-                    logging.warning(str(image1[row][column]) + '\t' + str(image2[row][column]))
-                    distance += compare_pixel(image1[row][column], image2[row][column])
-                else:
-                    break
+    for row in range(min(height1, height2)):
+        for column in range(min(width1, width2)):
+            distance += compare_pixel(image1[row][column], image2[row][column])
 
     return distance
 
@@ -74,17 +68,10 @@ def get_piece(image, upper_left, size):
     :param size: size of the slice
     :return: returns the slice as list of lists of pixels (height, width)
     """
-    piece = []
+    height, width = get_image_size(image)
 
-    for row in range(size[HEIGHT]):
-        if image[row]:
-            for column in range(size[WIDTH]):
-                if image[row][column]:
-                    piece.append(
-                        image[row + upper_left[HEIGHT]]
-                        [column + upper_left[WIDTH]])
-
-    return piece
+    return [column[min(width, upper_left[WIDTH]):min(width, upper_left[WIDTH]+size[WIDTH])]
+            for column in image[min(height, upper_left[HEIGHT]):min(height, upper_left[HEIGHT] + size[HEIGHT])]]
 
 
 def set_piece(image, upper_left, piece):
@@ -94,17 +81,15 @@ def set_piece(image, upper_left, piece):
     :param upper_left: starting position of the upper left corner of the new image piece
     :param piece: the piece that would be placed inside the original image
     """
-    height, width = get_image_size(piece)
+    #logging.warning(piece)
+    image_height, image_width = get_image_size(image)
+    piece_height, piece_width = get_image_size(piece)
+    row_start, row_end = min(image_height, upper_left[HEIGHT]), min(image_height, upper_left[HEIGHT] + piece_height)
+    column_start, column_end = min(image_width, upper_left[WIDTH]), min(image_width, upper_left[WIDTH] + piece_width)
 
-    for row in range(height):
-        if image[row]:
-            for column in range(width):
-                if image[row][column]:
-                    image[upper_left[HEIGHT] + row][upper_left[WIDTH] + column] = piece[HEIGHT][WIDTH]
-                else:
-                    break
-        else:
-            break
+    for row in range(row_start, row_end):
+        for column in range(column_start, column_end):
+            image[row][column] = piece[row - row_start][column - column_start]
 
 
 def average(image):
@@ -121,12 +106,10 @@ def average(image):
     resolution = height * width
 
     for row in range(height):
-        if image[row]:
-            for column in range(width):
-                if image[row][column]:
-                    red_amount += image[row][column][RED_INDEX]
-                    green_amount += image[row][column][GREEN_INDEX]
-                    blue_amount += image[row][column][BLUE_INDEX]
+        for column in range(width):
+            red_amount += image[row][column][RED_INDEX]
+            green_amount += image[row][column][GREEN_INDEX]
+            blue_amount += image[row][column][BLUE_INDEX]
 
     return red_amount / resolution, green_amount / resolution, blue_amount / resolution
 
@@ -154,14 +137,13 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
     init_deviation = compare_pixel(original_average, averages[0])
 
     while len(candidate_tiles) < num_candidates:
-        last_index = 0
-        deviation = init_deviation
-
-        for i in range(len(tiles)):
+        min_deviation = init_deviation
+        for i in range(len(averages)):
             if tiles[i] not in candidate_tiles:
                 deviation = compare_pixel(original_average, averages[i])
 
-                if deviation < init_deviation:
+                if deviation < min_deviation:
+                    min_deviation = deviation
                     last_index = i
 
         candidate_tiles.append(tiles[last_index])
@@ -176,7 +158,17 @@ def choose_tile(piece, tiles):
     :param tiles: list of tiles to chose from
     :return: returns best matching tile
     """
-    return min([compare(tile, piece) for tile in tiles])
+    distance = compare(tiles[0], piece)
+    index = 0
+
+    for i in range(len(tiles)):
+        temp_dist = compare(tiles[i], piece)
+
+        if temp_dist < distance:
+            distance = temp_dist
+            index = i
+
+    return tiles[index]
 
 
 def make_mosaic(image, tiles, num_candidates):
@@ -193,11 +185,11 @@ def make_mosaic(image, tiles, num_candidates):
     mosaic = image
     best_tiles = get_best_tiles(image, tiles, preprocess_tiles(tiles), num_candidates)
 
-    for row in range(int(height_image / height_tile)):
-        for column in range(int(width_image / width_tile)):
+    for row in range(0, height_image, height_tile):
+        for column in range(0, width_image, width_tile):
             best_tile = choose_tile(get_piece(image, last_position, [height_tile, width_tile]), best_tiles)
             set_piece(mosaic, last_position, best_tile)
-            last_position += height_tile, width_tile
+            last_position = row, column
     return mosaic
 
 
@@ -222,5 +214,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-
     main(sys.argv)
