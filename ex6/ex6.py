@@ -18,6 +18,11 @@ NUM_CANDIDATES_INDEX = 5
 
 
 def get_image_size(image):
+    """
+    Gets the image size as tuple (height, width)
+    :param image: image to process
+    :return: tuple containing the measurements (height, width)
+    """
     return len(image), len(image[WIDTH])
 
 
@@ -55,7 +60,6 @@ def compare(image1, image2):
                 if image2[row][column]:
                     logging.warning(str(image1[row][column]) + '\t' + str(image2[row][column]))
                     distance += compare_pixel(image1[row][column], image2[row][column])
-                    logging.warning(distance)
                 else:
                     break
 
@@ -71,13 +75,14 @@ def get_piece(image, upper_left, size):
     :return: returns the slice as list of lists of pixels (height, width)
     """
     piece = []
-    height, width = get_image_size(image)
 
     for row in range(size[HEIGHT]):
         if image[row]:
             for column in range(size[WIDTH]):
                 if image[row][column]:
-                    piece.append(image[row + upper_left[HEIGHT]][column + upper_left[WIDTH]])
+                    piece.append(
+                        image[row + upper_left[HEIGHT]]
+                        [column + upper_left[WIDTH]])
 
     return piece
 
@@ -149,6 +154,7 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
     init_deviation = compare_pixel(original_average, averages[0])
 
     while len(candidate_tiles) < num_candidates:
+        last_index = 0
         deviation = init_deviation
 
         for i in range(len(tiles)):
@@ -156,16 +162,31 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
                 deviation = compare_pixel(original_average, averages[i])
 
                 if deviation < init_deviation:
-                    candidate_tiles.append(tiles[i])
+                    last_index = i
+
+        candidate_tiles.append(tiles[last_index])
 
     return candidate_tiles
 
 
 def choose_tile(piece, tiles):
+    """
+    Gets the best matching tile for the original image piece
+    :param piece: piece of the original image that will be replaces
+    :param tiles: list of tiles to chose from
+    :return: returns best matching tile
+    """
     return min([compare(tile, piece) for tile in tiles])
 
 
 def make_mosaic(image, tiles, num_candidates):
+    """
+    Creates the mosaic image from the tiles list
+    :param image: original image
+    :param tiles: list of tiles to process and replace regions of the image with
+    :param num_candidates: number of tiles to choose that will be shown in the mosaic
+    :return: returns the mosaic image
+    """
     height_tile, width_tile = get_image_size(tiles[0])
     height_image, width_image = get_image_size(image)
     last_position = [0, 0]
@@ -181,6 +202,11 @@ def make_mosaic(image, tiles, num_candidates):
 
 
 def main(args):
+    """
+    Gets the environment arguments passed to the script and assigns them to variables.
+    Then calls the appropriate functions to create the mosaic image
+    :param args: list of environment arguments
+    """
     source_image = args[SOURCE_IMAGE_INDEX]
     source_tiles = args[SOURCE_TILES_INDEX]
     output_image = args[OUTPUT_IMAGE_INDEX]
@@ -196,4 +222,5 @@ def main(args):
 
 
 if __name__ == '__main__':
+
     main(sys.argv)
