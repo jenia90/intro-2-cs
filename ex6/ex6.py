@@ -61,9 +61,10 @@ def compare(image1, image2):
     :return: returns the RGB distance between the 2 images
     """
     distance = 0
-    height1, width1 = get_image_size(image1)
-    height2, width2 = get_image_size(image2)
+    height1, width1 = get_image_size(image1)  # gets the size of the first image
+    height2, width2 = get_image_size(image2)  # gets the size of the second image
 
+    # iterates through rows and columns of the smaller image and compares each of the pixels from both images
     for row in range(min(height1, height2)):
         for column in range(min(width1, width2)):
             distance += compare_pixel(image1[row][column], image2[row][column])
@@ -79,8 +80,9 @@ def get_piece(image, upper_left, size):
     :param size: size of the slice
     :return: returns the slice as list of lists of pixels (height, width)
     """
-    height, width = get_image_size(image)
+    height, width = get_image_size(image)  # gets the size of the image
 
+    # slices the original image at specific position and creates a piece of desired size
     return [column[min(width, upper_left[WIDTH]):min(width, upper_left[WIDTH]+size[WIDTH])]
             for column in image[min(height, upper_left[HEIGHT]):min(height, upper_left[HEIGHT] + size[HEIGHT])]]
 
@@ -94,9 +96,12 @@ def set_piece(image, upper_left, piece):
     """
     image_height, image_width = get_image_size(image)
     piece_height, piece_width = get_image_size(piece)
+
+    # gets the beginning and the end of each row and column by taking the one that doesn't exceed the size of the image
     row_start, row_end = min(image_height, upper_left[HEIGHT]), min(image_height, upper_left[HEIGHT] + piece_height)
     column_start, column_end = min(image_width, upper_left[WIDTH]), min(image_width, upper_left[WIDTH] + piece_width)
 
+    # iterates the rows and columns of the image and replaces the portion of the original image
     for row in range(row_start, row_end):
         for column in range(column_start, column_end):
             image[row][column] = piece[row - row_start][column - column_start]
@@ -113,14 +118,17 @@ def average(image):
     blue_amount = 0
 
     height, width = get_image_size(image)
-    resolution = height * width
+    resolution = height * width  # calculates the resolution of the image
 
+    # iterates through rows and columns and calculates the combined amount of each of the RGB colors
     for row in range(height):
         for column in range(width):
             red_amount += image[row][column][RED_INDEX]
             green_amount += image[row][column][GREEN_INDEX]
             blue_amount += image[row][column][BLUE_INDEX]
 
+    # devides each combined amount by the image resolution to get the average of each color.
+    # (returned value is RGB tuple)
     return red_amount / resolution, green_amount / resolution, blue_amount / resolution
 
 
@@ -142,8 +150,8 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
     :param num_candidates: number of tiles to choose
     :return: returns a list of matched tiles
     """
-    candidate_tiles = []
-    original_average = average(objective)
+    candidate_tiles = []  # creates a place holder for the returned list
+    original_average = average(objective)  # gets the average of the original image
     init_deviation = compare_pixel(original_average, averages[0])
 
     while len(candidate_tiles) < num_candidates:
