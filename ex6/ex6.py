@@ -1,7 +1,15 @@
+#################################################################################
+#  FILE: ex6.py
+#  WRITER : yevgeni, jenia90, 320884216
+#  EXERCISE : intro2cs ex6 2015-2016
+#  DESCRIPTION : Program to create a photo mosaic from different smaller images
+#
+#################################################################################
+
 import math
 import sys
+import copy
 from mosaic import *
-import logging
 
 RED_INDEX = 0
 GREEN_INDEX = 1
@@ -16,6 +24,10 @@ OUTPUT_IMAGE_INDEX = 3
 TILE_HEIGHT_INDEX = 4
 NUM_CANDIDATES_INDEX = 5
 
+NUMBER_OF_ARGS = 6
+ARGS_LENGTH_ERROR = "Wrong number of parameters. The correct usage is:" \
+                    "\nex6.py <image_source> <images_dir> <output_name> <tile_height> <num_candidates>"
+
 
 def get_image_size(image):
     """
@@ -23,7 +35,7 @@ def get_image_size(image):
     :param image: image to process
     :return: tuple containing the measurements (height, width)
     """
-    return len(image), len(image[WIDTH])
+    return len(image), len(image[HEIGHT])
 
 
 def compare_pixel(pixel1, pixel2):
@@ -80,7 +92,6 @@ def set_piece(image, upper_left, piece):
     :param upper_left: starting position of the upper left corner of the new image piece
     :param piece: the piece that would be placed inside the original image
     """
-    #logging.warning(piece)
     image_height, image_width = get_image_size(image)
     piece_height, piece_width = get_image_size(piece)
     row_start, row_end = min(image_height, upper_left[HEIGHT]), min(image_height, upper_left[HEIGHT] + piece_height)
@@ -137,6 +148,7 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
 
     while len(candidate_tiles) < num_candidates:
         min_deviation = init_deviation
+        last_index = 0
 
         for i in range(len(averages)):
             if tiles[i] not in candidate_tiles:
@@ -182,7 +194,7 @@ def make_mosaic(image, tiles, num_candidates):
     height_tile, width_tile = get_image_size(tiles[0])
     height_image, width_image = get_image_size(image)
     last_position = [0, 0]
-    mosaic = image
+    mosaic = copy.deepcopy(image)
     averages = preprocess_tiles(tiles)
 
     for row in range(0, height_image, height_tile):
@@ -201,18 +213,21 @@ def main(args):
     Then calls the appropriate functions to create the mosaic image
     :param args: list of environment arguments
     """
-    source_image = args[SOURCE_IMAGE_INDEX]
-    source_tiles = args[SOURCE_TILES_INDEX]
-    output_image = args[OUTPUT_IMAGE_INDEX]
-    tile_height = int(args[TILE_HEIGHT_INDEX])
-    num_candidates = int(args[NUM_CANDIDATES_INDEX])
+    if len(args) == NUMBER_OF_ARGS:
+        source_image = args[SOURCE_IMAGE_INDEX]
+        source_tiles = args[SOURCE_TILES_INDEX]
+        output_image = args[OUTPUT_IMAGE_INDEX]
+        tile_height = int(args[TILE_HEIGHT_INDEX])
+        num_candidates = int(args[NUM_CANDIDATES_INDEX])
 
-    save(
-        make_mosaic(
-            load_image(source_image),
-            build_tile_base(source_tiles, tile_height),
-            num_candidates),
-        output_image)
+        save(
+            make_mosaic(
+                load_image(source_image),
+                build_tile_base(source_tiles, tile_height),
+                num_candidates),
+            output_image)
+    else:
+        print(ARGS_LENGTH_ERROR)
 
 
 if __name__ == '__main__':
