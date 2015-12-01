@@ -194,6 +194,7 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
                 if deviation < min_deviation:
                     min_deviation = deviation
                     last_index = i
+
         # adds the best matching tile to the list
         candidate_tiles.append(tiles[last_index])
 
@@ -274,6 +275,6 @@ def main(args):
     else:
         print(ARGS_LENGTH_ERROR)
 
-# loads the main function whenever the script is executed and passes args to it
+# calls the main function whenever the script is executed and passes args to it
 if __name__ == '__main__':
     main(sys.argv)
