@@ -1,0 +1,32 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/
+    Apress Pro Python 2nd Edition
+
+=============================
+=  README for ex6: Photo-mosaic maker
+=============================
+
+Program to create a photo mosaic from different smaller images
+
+==================
+=  Description:  =
+==================
+
+This program creates a photo mosaic from a images located in the <tiles_dir> folder.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		        This file
+ex6.py              Contains logic of the program
+
+======================
+=  Special Comments  =
+======================
