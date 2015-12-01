@@ -15,12 +15,6 @@ To answer the questions I used to following sources:
 Program to create a photo mosaic from different smaller images
 
 ==================
-= Usage:         =
-=================
-
-python3 ex6.py <source_image> <tiles_dir> <output_image> <tile_height_value> <num_candidate_tiles>
-
-==================
 =  Description:  =
 ==================
 
