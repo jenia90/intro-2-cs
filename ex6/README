@@ -1,0 +1,38 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/
+    Apress Pro Python 2nd Edition
+
+=============================
+=  README for ex6: Food basket comparison
+=============================
+
+Program to create a photo mosaic from different smaller images
+
+==================
+= Usage:         =
+=================
+
+python3 ex6.py <source_image> <tiles_dir> <output_image> <tile_height_value> <num_candidate_tiles>
+
+==================
+=  Description:  =
+==================
+
+This program creates a photo mosaic from a images located in the <tiles_dir> folder.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		        This file
+ex6.py              Contains logic of the program
+
+======================
+=  Special Comments  =
+======================

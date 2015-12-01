@@ -51,7 +51,6 @@ def compare(image1, image2):
     distance = 0
     height1, width1 = get_image_size(image1)
     height2, width2 = get_image_size(image2)
-    # logging.warning(str(image1) + '\t' + str(image2))
 
     for row in range(min(height1, height2)):
         for column in range(min(width1, width2)):
@@ -138,6 +137,7 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
 
     while len(candidate_tiles) < num_candidates:
         min_deviation = init_deviation
+
         for i in range(len(averages)):
             if tiles[i] not in candidate_tiles:
                 deviation = compare_pixel(original_average, averages[i])
@@ -183,11 +183,13 @@ def make_mosaic(image, tiles, num_candidates):
     height_image, width_image = get_image_size(image)
     last_position = [0, 0]
     mosaic = image
-    best_tiles = get_best_tiles(image, tiles, preprocess_tiles(tiles), num_candidates)
+    averages = preprocess_tiles(tiles)
 
     for row in range(0, height_image, height_tile):
         for column in range(0, width_image, width_tile):
-            best_tile = choose_tile(get_piece(image, last_position, [height_tile, width_tile]), best_tiles)
+            piece = get_piece(image, last_position, [height_tile, width_tile])
+            best_tiles = get_best_tiles(piece, tiles, averages, num_candidates)
+            best_tile = choose_tile(piece, best_tiles)
             set_piece(mosaic, last_position, best_tile)
             last_position = row, column
     return mosaic
