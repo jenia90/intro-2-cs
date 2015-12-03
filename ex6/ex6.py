@@ -168,37 +168,17 @@ def get_best_tiles(objective, tiles, averages , num_candidates):
     :param num_candidates: number of tiles to choose
     :return: returns a list of matched tiles
     """
-    candidate_tiles = []  # creates a place holder for the returned list
     original_average = average(objective)  # gets the average of the original image
-    init_deviation = compare_pixel(original_average, averages[0])
 
-    # keeps looping until the length of the list matches the desired number
-    while len(candidate_tiles) < num_candidates:
-        min_deviation = init_deviation
-        last_index = 0
+    # creates a list of pixel value distances
+    dist_lst = [compare_pixel(original_average, avg_tile)
+                for avg_tile in averages]
 
-        # iterates through the list of tiles and checks each if
-        # it's average color is the closest to the
-        # image\piece of image we want to replace
-        for i in range(len(averages)):
-            # checks if the tile is not in the list already
-            if tiles[i] not in candidate_tiles:
-                # compares the average pixel values of 2 tiles
-                deviation = compare_pixel(original_average, averages[i])
-
-                # checks if the new deviation is smaller then the
-                # initial one (which means better match) and assigns
-                # the index of the associated tile to the variable which will
-                # later help us find the said tile. also sets the minimum
-                # deviation to the smaller value
-                if deviation < min_deviation:
-                    min_deviation = deviation
-                    last_index = i
-
-        # adds the best matching tile to the list
-        candidate_tiles.append(tiles[last_index])
-
-    return candidate_tiles
+    # zips tile list and distance list together, sorts them and then separates
+    # them into 2 lists and then slices from the second list (tiles)
+    # the number of tiles specified in the num_candidates variable
+    return [list(tiles) for tiles
+            in zip(*sorted(zip(dist_lst, tiles)))][1][:num_candidates]
 
 
 def choose_tile(piece, tiles):
