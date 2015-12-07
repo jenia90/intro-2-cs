@@ -6,10 +6,6 @@
 #
 ##################################################
 
-
-DEMO_LIST_OF_CHARS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-
-
 def print_to_n(n):
     """
     prints all the numbers from 1 to n
@@ -40,10 +36,9 @@ def has_divisor_smaller_than(n, i):
     if i == 1:
         return False
     elif n % i == 0:
-        has_divisor_smaller_than(n, i-1)
         return True
-    #else:
-    #    return has_divisor_smaller_than(n, i-1)
+    else:
+        return has_divisor_smaller_than(n, i-1)
 
 
 def is_prime(n):
@@ -253,7 +248,9 @@ def no_repetition_sequences_list_prefix(char_list, n, seq_lst=[], prefix=''):
 
     return seq_lst
 
-def no_repetition_sequences_list(char_list, n):
-    return no_repetition_sequences_list_prefix(char_list, n)
 
-print(no_repetition_sequences_list(DEMO_LIST_OF_CHARS, 3))
+def no_repetition_sequences_list(char_list, n):
+    if n > 0:
+        return no_repetition_sequences_list_prefix(char_list, n)
+    else:
+        return []
