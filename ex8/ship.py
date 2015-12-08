@@ -116,7 +116,7 @@ class Ship:
         otherwise.
         http://stackoverflow.com/questions/16138015/python-comparing-two-lists
         """
-        return all((map(lambda v: v in self.hits, self.coordinates())))
+        return all((map(lambda pos: pos in self.hits, self.coordinates())))
 
     def __contains__(self, pos):
         """
