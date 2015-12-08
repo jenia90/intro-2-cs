@@ -2,7 +2,7 @@
 #  FILE: ex7.py
 #  WRITER : yevgeni, jenia90, 320884216
 #  EXERCISE : intro2cs ex7 2015-2016
-#  DESCRIPTION : 
+#  DESCRIPTION : Few simple functions to practice recursion
 #
 ##################################################
 
@@ -33,12 +33,12 @@ def has_divisor_smaller_than(n, i):
     :param i: divisor candidate
     :return: False if no divisors and True if there are any
     """
-    if i == 1:
+    if i == 1:  # terminal condition for the recursive calls
         return False
-    elif n % i == 0:
+    elif n % i == 0:  # checks if i divides n without remainder
         return True
-    else:
-        return has_divisor_smaller_than(n, i-1)
+
+    return has_divisor_smaller_than(n, i-1)
 
 
 def is_prime(n):
@@ -47,7 +47,11 @@ def is_prime(n):
     :param n: number to check
     :return: True if prime and False if not
     """
-    return False if n == 1 or has_divisor_smaller_than(n, n-1) else True
+    if n > 0:
+        return False if n == 1 or has_divisor_smaller_than(n, n-1) else True
+
+    else:
+        return False
 
 
 def list_divisors(n, divs, d=2):
@@ -91,9 +95,10 @@ def factorial(n):
     :param n: the number to process
     :return: returns n!
     """
-    if n == 0:
+    if n == 0:  # terminal condition for the recursive calls
         return 1
     else:
+        # multiplies n by all number smaller than itself (n!)
         return n*factorial(n-1)
 
 
@@ -164,6 +169,8 @@ def print_binary_sequences(n):
     """
     if n > 0:
         print_binary_sequences_with_prefix(n)
+    else:
+        print('')
 
 
 def print_sequences_with_prefix(char_list, n, prefix=''):
@@ -192,9 +199,11 @@ def print_sequences(char_list, n):
     """
     if n > 0:
         print_sequences_with_prefix(char_list, n)
+    else:
+        print('')
 
 
-def print_no_repetition_sequence_with_prefix(char_list, n, prefix=''):
+def print_no_repetition_sequences_with_prefix(char_list, n, prefix=''):
     """
     helper function to print sequence of characters recursively
     :param n: the length of each sequence
@@ -209,13 +218,13 @@ def print_no_repetition_sequence_with_prefix(char_list, n, prefix=''):
         # to build the sequence of characters removing the current character
         # so it won't appear again in the same sequence
         for i in range(len(char_list)):
-            print_no_repetition_sequence_with_prefix(char_list[:i] +
+            print_no_repetition_sequences_with_prefix(char_list[:i] +
                                                      char_list[i+1:], n-1,
                                                      prefix + char_list[i])
         return prefix
 
 
-def print_no_repetition_sequence(char_list, n):
+def print_no_repetition_sequences(char_list, n):
     """
     prints n-length character sequences from a given list (w/o repetition of
     characters in each sequence)
@@ -223,15 +232,18 @@ def print_no_repetition_sequence(char_list, n):
     :param char_list: list of characters which will be used to build each seq.
     """
     if n > 0:
-        print_no_repetition_sequence_with_prefix(char_list, n)
+        print_no_repetition_sequences_with_prefix(char_list, n)
+    else:
+        print('')
 
 
-def no_repetition_sequences_list_prefix(char_list, n, seq_lst=[], prefix=''):
+def no_repetition_sequences_list_prefix(char_list, n, seq_lst, prefix=''):
     """
-    helper function to print sequence of characters recursively
-    :param n: the length of each sequence
-    :param prefix: the prefix of each sequence
+    helper function to get a list of character sequences recursively
     :param char_list: list of characters to build the sequence from
+    :param n: the length of each sequence
+    :param seq_lst: list of sequences
+    :param prefix: the prefix of each sequence
     """
     if n == 0:  # terminal condition for the recursive calls
         seq_lst.append(prefix)
@@ -242,7 +254,7 @@ def no_repetition_sequences_list_prefix(char_list, n, seq_lst=[], prefix=''):
         # so it won't appear again in the same sequence
         for i in range(len(char_list)):
             no_repetition_sequences_list_prefix(char_list[:i] +
-                                                     char_list[i+1:],
+                                                char_list[i+1:],
                                                 n-1, seq_lst,
                                                 prefix + char_list[i])
 
@@ -250,7 +262,13 @@ def no_repetition_sequences_list_prefix(char_list, n, seq_lst=[], prefix=''):
 
 
 def no_repetition_sequences_list(char_list, n):
+    """
+    gets a list of n-length character sequences from the character list
+    :param char_list: list of characters to be used for the sequence creation
+    :param n: length of each sequence
+    :return: returns a list of strings(sequences)
+    """
     if n > 0:
-        return no_repetition_sequences_list_prefix(char_list, n)
+        return no_repetition_sequences_list_prefix(char_list, n, [])
     else:
-        return []
+        return ['']

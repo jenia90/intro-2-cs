@@ -9,23 +9,23 @@ To answer the questions I used to following sources:
     Apress Pro Python 2nd Edition
 
 =============================
-=  README for ex6: Photo-mosaic maker
+=  README for ex7: Recursion
 =============================
 
-Program to create a photo mosaic from different smaller images
+A few simple functions to practice using recursion to solve different programming problems
 
 ==================
 =  Description:  =
 ==================
 
-This program creates a photo mosaic from a images located in the <tiles_dir> folder.
+Few simple functions to practice recursion
 
 =============================
 =  List of submitted files: =
 =============================
 
 README		        This file
-ex6.py              Contains logic of the program
+ex7.py              Contains all the different functions I was asked to implement
 
 ======================
 =  Special Comments  =
