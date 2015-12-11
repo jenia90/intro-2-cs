@@ -1,3 +1,5 @@
+import ship_helper as SH
+
 ############################################################
 # Helper class
 ############################################################
@@ -63,14 +65,10 @@ class Ship:
             3. Last sailing direction.
             4. The size of the board in which the ship is located.
         """
-        pass
-
-    def get_direction(self):
-        """
-        Returns ships current direction
-        :return:
-        """
-
+        return (str(self.coordinates()),
+                str(self.damaged_cells()),
+                SH.direction_repr_str(self.direction()),
+                str(self.board_size))
 
     def move(self):
         """
@@ -114,9 +112,8 @@ class Ship:
         """
         :return: True if all ship's coordinates were hit in previous turns, False
         otherwise.
-        http://stackoverflow.com/questions/16138015/python-comparing-two-lists
         """
-        return all((map(lambda pos: pos in self.hits, self.coordinates())))
+        return len(self.coordinates()) == len(self.damaged_cells())
 
     def __contains__(self, pos):
         """
@@ -133,8 +130,12 @@ class Ship:
         :return: A list of (x, y) tuples representing the ship's current
         position.
         """
-        # TODO:Continue from here! (step 6)
-        pass
+        X = 0
+        Y = 1
+
+        return [(self.pos[X] + self.direction()[X] * i,
+                 self.pos[Y] + self.direction()[Y] * i)
+                for i in range(self.length)]
 
     def damaged_cells(self):
         """
@@ -144,7 +145,7 @@ class Ship:
          return an empty list). There is no importance to the order of the
          values in the returned list.
         """
-        pass
+        return self.hits
 
     def direction(self):
         """
@@ -174,4 +175,11 @@ class Ship:
             if the given coordinate is hit : True
             if the coordinate is not part of the ship's body : None 
         """
-        pass
+        if pos in self.damaged_cells():
+            return True
+
+        elif pos not in self.coordinates():
+            return None
+
+        else:
+            return False
