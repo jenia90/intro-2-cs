@@ -51,7 +51,7 @@ class Ship:
         """
         self.pos = pos
         self.length = length
-        self.direction = direction
+        self.init_direction = direction
         self.board_size = board_size
         self.hits = []
 
@@ -81,8 +81,8 @@ class Ship:
         """
         if len(self.damaged_cells()) == 0:
             if self.board_size in self.pos:
-                self.direction = \
-                    (self.direction[xy] * -1 for xy in self.direction)
+                self.init_direction = \
+                    (self.init_direction[xy] * -1 for xy in self.init_direction)
 
             return self.direction()
 
@@ -102,7 +102,7 @@ class Ship:
         """
         if pos in self.coordinates() and pos not in self.damaged_cells():
             self.hits.append(pos)  # appends the hit position to the hits list
-            self.direction = Direction.NOT_MOVING  # stops the ship
+            self.init_direction = Direction.NOT_MOVING  # stops the ship
             return True  # returns True for confirmed hit
 
         else:
@@ -133,8 +133,8 @@ class Ship:
         x = 0
         y = 1
 
-        return [(self.pos[x] + self.direction()[x] * i,
-                 self.pos[y] + self.direction()[y] * i)
+        return [(abs(self.pos[x] + self.direction()[x] * i),
+                 abs(self.pos[y] + self.direction()[y] * i))
                 for i in range(self.length)]
 
     def damaged_cells(self):
@@ -154,16 +154,16 @@ class Ship:
          [UP, DOWN, LEFT, RIGHT] according to current
          sailing direction or NOT_MOVING if the ship is hit and not moving.
         """
-        if self.direction == Direction.LEFT:
+        if self.init_direction == Direction.LEFT:
             return Direction.LEFT
 
-        elif self.direction == Direction.RIGHT:
+        elif self.init_direction == Direction.RIGHT:
             return Direction.RIGHT
 
-        elif self.direction == Direction.UP:
+        elif self.init_direction == Direction.UP:
             return Direction.UP
 
-        elif self.direction == Direction.DOWN:
+        elif self.init_direction == Direction.DOWN:
             return Direction.DOWN
         else:
             return Direction.NOT_MOVING
