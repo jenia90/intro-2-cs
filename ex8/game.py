@@ -23,7 +23,12 @@ class Game:
         :param ships: A list of ships that participate in the game.
         :return: A new Game object.
         """
-        pass
+        self.board_size = board_size
+        # self.ships = ships  /// PRODUCTION
+        self.ships = gh.initialize_ship_list(self.board_size - 1, 3)
+        self.bombs = {}
+        self.hits = []
+        self.hit_ships = []
 
     def __play_one_round(self):
         """
@@ -43,7 +48,35 @@ class Game:
             GAME_STATUS_ONGOING if there are still ships on the board or
             GAME_STATUS_ENDED otherwise.
         """
-        pass
+        usr_inpt = gh.get_target(self.board_size)
+
+        self.bombs[usr_inpt] = 3
+
+        for ship in self.ships:
+            ship.move()
+
+            for bomb in self.bombs.keys():
+                if bomb in ship.coordinates():
+                    ship.hit(bomb)
+                    del self.bombs[bomb]
+                    self.hits.append(bomb)
+                    self.hit_ships.append(ship.pos)
+                    if ship.terminated():
+                        self.ships.remove(ship)
+
+        for bomb in self.bombs.keys():
+            if self.bombs[bomb] <= 0:
+                del self.bombs[bomb]
+            else:
+                self.bombs[bomb] -= 1
+
+        gh.board_to_string(self.board_size,
+                           self.hits,
+                           self.bombs,
+                           self.hit_ships,
+                           lambda ships: [ship for ship in self.ships
+                                          if ship not in self.hit_ships])
+        # TODO: Continue this fucking crappy function implementation!!!! FUUUU
 
     def __repr__(self):
         """
@@ -66,7 +99,12 @@ class Game:
         completion.
         :return: None
         """
-        pass
+        print(gh.report_legend())  # prints game legend
+
+        while len(self.ships) > 0:
+            self.__play_one_round()
+
+        gh.report_gameover()
 
 ############################################################
 # An example usage of the game

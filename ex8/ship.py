@@ -82,7 +82,7 @@ class Ship:
         if len(self.damaged_cells()) == 0:
             if self.board_size in self.pos:
                 self.direction = \
-                    [self.direction[xy] * -1 for xy in self.direction]
+                    (self.direction[xy] * -1 for xy in self.direction)
 
             return self.direction()
 
@@ -100,7 +100,7 @@ class Ship:
         :return: True if the bomb generated a new hit in the ship, False
          otherwise.
         """
-        if pos in self.coordinates() and pos not in self.hits:
+        if pos in self.coordinates() and pos not in self.damaged_cells():
             self.hits.append(pos)  # appends the hit position to the hits list
             self.direction = Direction.NOT_MOVING  # stops the ship
             return True  # returns True for confirmed hit
@@ -130,11 +130,11 @@ class Ship:
         :return: A list of (x, y) tuples representing the ship's current
         position.
         """
-        X = 0
-        Y = 1
+        x = 0
+        y = 1
 
-        return [(self.pos[X] + self.direction()[X] * i,
-                 self.pos[Y] + self.direction()[Y] * i)
+        return [(self.pos[x] + self.direction()[x] * i,
+                 self.pos[y] + self.direction()[y] * i)
                 for i in range(self.length)]
 
     def damaged_cells(self):
@@ -161,10 +161,12 @@ class Ship:
             return Direction.RIGHT
 
         elif self.direction == Direction.UP:
-            return Direction.DOWN
+            return Direction.UP
 
         elif self.direction == Direction.DOWN:
             return Direction.DOWN
+        else:
+            return Direction.NOT_MOVING
 
     def cell_status(self, pos):
         """
