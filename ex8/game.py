@@ -29,6 +29,16 @@ class Game:
         self.hits = []
         self.hit_ships = []
 
+    def hit_confiramation(self, pos, ship):
+        """
+        Checks if a bomb in the given location hit any of the ships
+        :param pos: coordinates (x,y) of a bomb
+        :param ship: current ship
+        :return: True if confirmed hit and False if not
+        """
+        pass # TODO: finish implementation
+
+
     def __play_one_round(self):
         """
         Note - this function is here to guide you and it is *not mandatory*
@@ -48,6 +58,9 @@ class Game:
             GAME_STATUS_ENDED otherwise.
         """
         intact_ships = []
+        round_hits = 0
+        round_terminations = 0
+
         usr_inpt = gh.get_target(self.board_size)
 
         self.bombs[usr_inpt] = 4
@@ -57,10 +70,16 @@ class Game:
 
             for bomb in self.bombs.keys():
                 if bomb in ship.coordinates():
+                    round_hits += 1
                     ship.hit(bomb)
                     self.hits.append(bomb)
                     for coordinate in ship.coordinates():
-                        self.hit_ships.append(coordinate)
+                        if coordinate not in self.hit_ships:
+                            self.hit_ships.append(coordinate)
+
+                    if ship.terminated():
+                        round_terminations += 1
+                        self.ships.remove(ship)
 
         for ship in self.ships:
             if ship not in self.hit_ships:
@@ -71,13 +90,13 @@ class Game:
                       for bomb in self.bombs.keys()
                       if self.bombs[bomb] > 0 and
                       self.bombs[bomb] not in self.hits}
-        import logging
-        logging.warning(game.__repr__())
+
         print(gh.board_to_string(self.board_size,
                                  self.hits,
                                  self.bombs,
                                  self.hit_ships,
                                  intact_ships))
+        gh.report_turn(round_hits, round_terminations)
 
     def __repr__(self):
         """

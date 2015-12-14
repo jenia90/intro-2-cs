@@ -82,7 +82,6 @@ class Ship:
         :return: A direction object representing the current movement direction.
         """
         direct_x, direct_y = self.init_direction
-        pos_x, pos_y = self.pos
         max_coordinate = max(self.coordinates())
 
         if len(self.damaged_cells()) == 0:
@@ -91,7 +90,8 @@ class Ship:
                     self.init_direction = (direct_x * -1, direct_y)
                 elif self.direction() == Direction.VERTICAL:
                     self.init_direction = (direct_x, direct_y * -1)
-                self.pos = max_coordinate
+                    
+                self.pos = self.coordinates()[self.length]
 
             return self.direction()
 
@@ -111,7 +111,6 @@ class Ship:
         """
         if pos in self.coordinates() and pos not in self.damaged_cells():
             self.hits.append(pos)  # appends the hit position to the hits list
-            self.init_direction = Direction.NOT_MOVING  # stops the ship
             return True  # returns True for confirmed hit
 
         else:
@@ -183,11 +182,7 @@ class Ship:
             if the given coordinate is hit : True
             if the coordinate is not part of the ship's body : None 
         """
-        if pos in self.damaged_cells():
-            return True
-
-        elif pos not in self.coordinates():
+        if pos not in self.coordinates():
             return None
 
-        else:
-            return False
+        return True if pos in self.damaged_cells() else False
