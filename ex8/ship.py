@@ -40,6 +40,8 @@ class Ship:
     future turns.
     A ship that had all her coordinates hit is considered terminated.
     """
+    X_AXIS = 0
+    Y_AXIS = 1
 
     def __init__(self, pos, length, direction, board_size):
         """
@@ -65,10 +67,10 @@ class Ship:
             3. Last sailing direction.
             4. The size of the board in which the ship is located.
         """
-        return (str(self.coordinates()),
-                str(self.damaged_cells()),
-                SH.direction_repr_str(self.direction()),
-                str(self.board_size))
+        return str(self.coordinates()) + \
+            str(self.damaged_cells()) + \
+            SH.direction_repr_str(Direction, self.direction()) + \
+            str(self.board_size)
 
     def move(self):
         """
@@ -79,10 +81,17 @@ class Ship:
         the ship
         :return: A direction object representing the current movement direction.
         """
+        direct_x, direct_y = self.init_direction
+        pos_x, pos_y = self.pos
+        max_coordinate = max(self.coordinates())
+
         if len(self.damaged_cells()) == 0:
-            if self.board_size in self.pos:
-                self.init_direction = \
-                    (self.init_direction[xy] * -1 for xy in self.init_direction)
+            if self.board_size == max(max_coordinate):
+                if self.direction() == Direction.HORIZONTAL:
+                    self.init_direction = (direct_x * -1, direct_y)
+                elif self.direction() == Direction.VERTICAL:
+                    self.init_direction = (direct_x, direct_y * -1)
+                self.pos = max_coordinate
 
             return self.direction()
 
@@ -130,11 +139,8 @@ class Ship:
         :return: A list of (x, y) tuples representing the ship's current
         position.
         """
-        x = 0
-        y = 1
-
-        return [(abs(self.pos[x] + self.direction()[x] * i),
-                 abs(self.pos[y] + self.direction()[y] * i))
+        return [(abs(self.pos[self.X_AXIS] + self.direction()[self.X_AXIS] * i),
+                 abs(self.pos[self.Y_AXIS] + self.direction()[self.Y_AXIS] * i))
                 for i in range(self.length)]
 
     def damaged_cells(self):

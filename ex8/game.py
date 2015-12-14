@@ -67,9 +67,12 @@ class Game:
                 for coordinate in ship.coordinates():
                     intact_ships.append(coordinate)
 
-        self.bombs = {bomb: (self.bombs[bomb] - 1) for bomb in self.bombs.keys()
-                      if self.bombs[bomb] > 0 and self.bombs[bomb] not in self.hits}
-
+        self.bombs = {bomb: (self.bombs[bomb] - 1)
+                      for bomb in self.bombs.keys()
+                      if self.bombs[bomb] > 0 and
+                      self.bombs[bomb] not in self.hits}
+        import logging
+        logging.warning(game.__repr__())
         print(gh.board_to_string(self.board_size,
                                  self.hits,
                                  self.bombs,
@@ -89,7 +92,12 @@ class Game:
             3. A list of the ships found on the board (each ship should be
                 represented by its __repr__ string).
         """
-        pass
+        ships_string = ''
+
+        for ship in self.ships:
+            ships_string += ship.__repr__()
+
+        return str(self.board_size) + str(self.bombs) + ships_string
 
     def play(self):
         """
