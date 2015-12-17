@@ -40,9 +40,6 @@ class Ship:
     future turns.
     A ship that had all her coordinates hit is considered terminated.
     """
-    X_AXIS = 0
-    Y_AXIS = 1
-
     def __init__(self, pos, length, direction, board_size):
         """
         A constructor for a Ship object
@@ -81,22 +78,37 @@ class Ship:
         the ship
         :return: A direction object representing the current movement direction.
         """
-        direct_x, direct_y = self.init_direction
-        max_coordinate = max(self.coordinates())
-
         if len(self.damaged_cells()) == 0:
-            if self.board_size == max(max_coordinate):
-                if self.direction() == Direction.HORIZONTAL:
-                    self.init_direction = (direct_x * -1, direct_y)
-                elif self.direction() == Direction.VERTICAL:
-                    self.init_direction = (direct_x, direct_y * -1)
-                    
-                self.pos = self.coordinates()[self.length]
+            self.reverse_moving_direction()
+
+            direct_x, direct_y = self.init_direction
+            pos_x, pos_y = self.pos
+
+            self.pos = (pos_x + direct_x), \
+                       (pos_y + direct_y)
 
             return self.direction()
 
         else:
             return Direction.NOT_MOVING
+
+    def reverse_moving_direction(self):
+        max_coordinate = max(self.coordinates())
+        min_coordinate = min(self.coordinates())
+
+        if max(max_coordinate) + 1 >= self.board_size:
+            if self.init_direction in Direction.HORIZONTAL:
+                self.init_direction = Direction.LEFT
+            elif self.init_direction == Direction.VERTICAL:
+                self.init_direction = Direction.UP
+            self.pos = min_coordinate
+
+        elif min(min_coordinate) <= 0:
+            if self.init_direction in Direction.HORIZONTAL:
+                self.init_direction = Direction.RIGHT
+            elif self.init_direction in Direction.VERTICAL:
+                self.init_direction = Direction.DOWN
+            self.pos = max_coordinate
 
     def hit(self, pos):
         """
@@ -138,8 +150,10 @@ class Ship:
         :return: A list of (x, y) tuples representing the ship's current
         position.
         """
-        return [(abs(self.pos[self.X_AXIS] + self.direction()[self.X_AXIS] * i),
-                 abs(self.pos[self.Y_AXIS] + self.direction()[self.Y_AXIS] * i))
+        pos_x, pos_y = self.pos
+        direct_x, direct_y = self.init_direction
+
+        return [(abs(pos_x + direct_x * i) % self.board_size, abs(pos_y + direct_y * i) % self.board_size)
                 for i in range(self.length)]
 
     def damaged_cells(self):

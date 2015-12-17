@@ -29,14 +29,15 @@ class Game:
         self.hits = []
         self.hit_ships = []
 
-    def hit_confiramation(self, pos, ship):
+    def hit_confiramation(self, bomb_pos, ship):
         """
         Checks if a bomb in the given location hit any of the ships
         :param pos: coordinates (x,y) of a bomb
         :param ship: current ship
         :return: True if confirmed hit and False if not
         """
-        pass # TODO: finish implementation
+        #if :
+
 
 
     def __play_one_round(self):
