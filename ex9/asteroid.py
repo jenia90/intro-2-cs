@@ -1,4 +1,4 @@
-import math
+from math import sqrt
 
 
 class Asteroid:
@@ -29,7 +29,7 @@ class Asteroid:
         """
         obj_x, obj_y = obj
         pos_x, pos_y = self.position
-        distance = math.sqrt((obj_x - pos_x) ** 2 + (obj_y - pos_y) ** 2)
+        distance = sqrt((obj_x - pos_x) ** 2 + (obj_y - pos_y) ** 2)
 
         return distance <= (self.radius + obj.radius)
 

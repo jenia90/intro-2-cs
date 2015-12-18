@@ -26,6 +26,9 @@ class Ship:
     def get_velocity(self):
         return self.vel
 
+    def get_heading(self):
+        return self.heading
+
     def get_heading_in_rad(self):
         return self.heading * self.DEG_TO_RAD
 
