@@ -7,6 +7,7 @@ class Ship:
     """
     INIT_HEADING = 0  # Parallel to the X axis
     DEG_TO_RAD = pi / 180
+    RADIUS = 1
 
     def __init__(self, pos, vel):
         """

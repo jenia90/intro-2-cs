@@ -5,10 +5,11 @@ class Asteroid:
     """
     Asteroid object class definition
     """
-    NORMAL_FACTOR = -5
+    INIT_SIZE = 3
     SIZE_COEFFICIENT = 10
+    NORMAL_FACTOR = -5
 
-    def __init__(self, position, velocity, size):
+    def __init__(self, position, velocity, size=INIT_SIZE):
         """
         Constructor for asteroid class
         :param position: position as coordinates tuple (x, y)
@@ -23,15 +24,15 @@ class Asteroid:
 
     def has_intersection(self, obj):
         """
-        Chekcs if our asteroid has intersection with another object
+        Checks if our asteroid has intersection with another object
         :param obj: the object that might intersect
         :return:
         """
-        obj_x, obj_y = obj
+        obj_x, obj_y = obj.get_position()
         pos_x, pos_y = self.position
         distance = sqrt((obj_x - pos_x) ** 2 + (obj_y - pos_y) ** 2)
 
-        return distance <= (self.radius + obj.radius)
+        return distance <= self.radius + obj.RADIUS
 
     def get_size(self):
         """
@@ -60,3 +61,6 @@ class Asteroid:
         :return: asteroid radius as int
         """
         return self.radius
+
+    def set_position(self, position):
+        self.position = position
