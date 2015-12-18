@@ -2,6 +2,9 @@ from math import pi
 
 
 class Ship:
+    """
+    Ship object class definition
+    """
     INIT_HEADING = 0  # Parallel to the X axis
     DEG_TO_RAD = pi / 180
 
