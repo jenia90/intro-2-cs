@@ -94,10 +94,7 @@ class GameRunner:
 
         # Accelerate ship
         elif self._screen.is_up_pressed():
-            vel_x, vel_y = self.ship.get_velocity()
-            heading_rad = self.ship.get_heading_in_rad()
-            self.ship.set_velocity((vel_x + cos(heading_rad),
-                                    vel_y + sin(heading_rad)))
+            self.ship.accelerate()
 
         for asteroid in self.asteroids:
             ast_x, ast_y = asteroid.get_position()
