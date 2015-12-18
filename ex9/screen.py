@@ -331,7 +331,7 @@ class Screen:
         :type x: int
         :param y: This is the Y coordinate of the ship
         :type y: int
-        :param heading: This is the heading of the ship (in radians)
+        :param heading: This is the heading of the ship (in degrees)
         :type heading: float
 
         """

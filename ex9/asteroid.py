@@ -1,5 +1,6 @@
 import math
 
+
 class Asteroid:
     """
     Asteroid object class definition
@@ -30,7 +31,7 @@ class Asteroid:
         pos_x, pos_y = self.position
         distance = math.sqrt((obj_x - pos_x) ** 2 + (obj_y - pos_y) ** 2)
 
-        return True if distance <= (self.radius + obj.radius) else False
+        return distance <= (self.radius + obj.radius)
 
     def get_size(self):
         """
@@ -59,5 +60,3 @@ class Asteroid:
         :return: asteroid radius as int
         """
         return self.radius
-
-
