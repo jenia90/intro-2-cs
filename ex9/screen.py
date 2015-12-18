@@ -4,6 +4,7 @@ import tkinter.messagebox
 
 from turtle import *
 
+
 class ShapesMaster:
     ASTEROID_BASE_SHAPE = "asteroid%d"
     SHIP_SHAPE = "ship"
@@ -11,19 +12,23 @@ class ShapesMaster:
 
     ASTEROIDS_TYPES = 3
 
-    ASTEROID_3_LAYOUT = ((-20, -16),(-21, 0), (-20,18),(0,27),(17,15),
-                            (25,0),(16,-15),(0,-21))
+    ASTEROID_3_LAYOUT = ((-20, -16), (-21, 0), (-20, 18), (0, 27), (17, 15),
+                         (25, 0), (16, -15), (0, -21))
 
-    ASTEROID_2_LAYOUT = ((-15, -10),(-16, 0), (-13,12),(0,19),(12,10),
-                            (20,0),(12,-10),(0,-13))
+    ASTEROID_2_LAYOUT = ((-15, -10), (-16, 0), (-13, 12), (0, 19), (12, 10),
+                         (20, 0), (12, -10), (0, -13))
 
-    ASTEROID_1_LAYOUT = ((-10,-5),(-12,0),(-8,8),(0,13),(8,6),(14,0),(12,0),(8,-6),(0,-7))
+    ASTEROID_1_LAYOUT = (
+        (-10, -5), (-12, 0), (-8, 8), (0, 13), (8, 6), (14, 0), (12, 0),
+        (8, -6),
+        (0, -7))
 
-    ASTEROIDS_LAYOUTS = [ASTEROID_1_LAYOUT, ASTEROID_2_LAYOUT, ASTEROID_3_LAYOUT]
+    ASTEROIDS_LAYOUTS = [ASTEROID_1_LAYOUT, ASTEROID_2_LAYOUT,
+                         ASTEROID_3_LAYOUT]
 
-    SHIP_LAYOUT = ((-10,-10),(0,-5),(10,-10),(0,10))
+    SHIP_LAYOUT = ((-10, -10), (0, -5), (10, -10), (0, 10))
 
-    TORPEDO_LAYOUT = ((-2,-4),(-2,4),(2,4),(2,-4))
+    TORPEDO_LAYOUT = ((-2, -4), (-2, 4), (2, 4), (2, -4))
 
     def __init__(self, screen):
         """
@@ -36,15 +41,15 @@ class ShapesMaster:
         self._updated = False
         self._add_base_shapes()
 
-    def add_shape(self,name,cords,override = False):
+    def add_shape(self, name, cords, override=False):
         if override or name not in self._shapes:
             self._shapes[name] = cords
-            self.screen.register_shape(name,cords)
+            self.screen.register_shape(name, cords)
 
     def _add_base_shapes(self):
         for i in range(ShapesMaster.ASTEROIDS_TYPES):
-            self.add_shape(ShapesMaster.ASTEROID_BASE_SHAPE%(i+1), \
-                        ShapesMaster.ASTEROIDS_LAYOUTS[i])
+            self.add_shape(ShapesMaster.ASTEROID_BASE_SHAPE % (i + 1), \
+                           ShapesMaster.ASTEROIDS_LAYOUTS[i])
 
         self.add_shape(ShapesMaster.SHIP_SHAPE, ShapesMaster.SHIP_LAYOUT)
         self.add_shape(ShapesMaster.TORPEDO_SHAPE, ShapesMaster.TORPEDO_LAYOUT)
@@ -59,7 +64,6 @@ class ShapesMaster:
 
 
 class Screen:
-
     SCREEN_MIN_X = -500
     SCREEN_MIN_Y = -500
     SCREEN_MAX_X = 500
@@ -92,33 +96,34 @@ class Screen:
     def _init_graphics(self):
         self._root = tkinter.Tk()
         self._root.title("Asteroids!")
-        self._cv = ScrolledCanvas(self._root,600,600,600,600)
-        self._cv.pack(side = tkinter.LEFT)
+        self._cv = ScrolledCanvas(self._root, 600, 600, 600, 600)
+        self._cv.pack(side=tkinter.LEFT)
         self._t = RawTurtle(self._cv)
 
         self._screen = self._t.getscreen()
         self._screen.setworldcoordinates(
-                                        Screen.SCREEN_MIN_X,
-                                        Screen.SCREEN_MIN_Y,
-                                        Screen.SCREEN_MAX_X,
-                                        Screen.SCREEN_MAX_X
-                                        )
+                Screen.SCREEN_MIN_X,
+                Screen.SCREEN_MIN_Y,
+                Screen.SCREEN_MAX_X,
+                Screen.SCREEN_MAX_X
+        )
         self._shapeMaster = ShapesMaster(self._screen)
         shapes = self._shapeMaster.get_shapes_dict()
 
         frame = tkinter.Frame(self._root)
-        frame.pack(side = tkinter.RIGHT,fill=tkinter.BOTH)
+        frame.pack(side=tkinter.RIGHT, fill=tkinter.BOTH)
 
         # add scores frame
         self._score_val = tkinter.StringVar()
         self._score_val.set("0")
-        scoreTitle = tkinter.Label(frame,text="Score")
+        scoreTitle = tkinter.Label(frame, text="Score")
         scoreTitle.pack()
-        scoreFrame = tkinter.Frame(frame,height=2, bd=1, \
-            relief=tkinter.SUNKEN)
+        scoreFrame = tkinter.Frame(frame, height=2, bd=1, \
+                                   relief=tkinter.SUNKEN)
         scoreFrame.pack()
-        score = tkinter.Label(scoreFrame,height=2,width=20,\
-            textvariable=self._score_val,fg="Yellow",bg="black")
+        score = tkinter.Label(scoreFrame, height=2, width=20, \
+                              textvariable=self._score_val, fg="Yellow",
+                              bg="black")
 
         ################
 
@@ -141,32 +146,37 @@ class Screen:
 
         # Add Lives Frame
         livesTitle = tkinter.Label(frame, \
-           text="Extra Lives Remaining")
+                                   text="Extra Lives Remaining")
         livesTitle.pack()
 
         livesFrame = tkinter.Frame(frame, \
-            height=30,width=60,relief=tkinter.SUNKEN)
+                                   height=30, width=60, relief=tkinter.SUNKEN)
         livesFrame.pack()
-        livesCanvas = ScrolledCanvas(livesFrame,150,40,150,40)
+        livesCanvas = ScrolledCanvas(livesFrame, 150, 40, 150, 40)
         livesCanvas.pack()
         livesTurtle = RawTurtle(livesCanvas)
         livesTurtle.ht()
         livesScreen = livesTurtle.getscreen()
-        livesScreen.register_shape(ShapesMaster.SHIP_SHAPE, shapes[ShapesMaster.SHIP_SHAPE])
+        livesScreen.register_shape(ShapesMaster.SHIP_SHAPE,
+                                   shapes[ShapesMaster.SHIP_SHAPE])
 
-        life1 = self._get_ship_obj(livesCanvas) #   SpaceShip(livesCanvas,-35,0,0,0)
-        life2 = self._get_ship_obj(livesCanvas) #SpaceShip(livesCanvas,0,0,0,0)
-        life3 = self._get_ship_obj(livesCanvas) #SpaceShip(livesCanvas,35,0,0,0)
+        life1 = self._get_ship_obj(
+                livesCanvas)  # SpaceShip(livesCanvas,-35,0,0,0)
+        life2 = self._get_ship_obj(
+                livesCanvas)  # SpaceShip(livesCanvas,0,0,0,0)
+        life3 = self._get_ship_obj(
+                livesCanvas)  # SpaceShip(livesCanvas,35,0,0,0)
 
-        self._draw_object(life1,-35,0)
-        self._draw_object(life2,0,0)
-        self._draw_object(life3,35,0)
+        self._draw_object(life1, -35, 0)
+        self._draw_object(life2, 0, 0)
+        self._draw_object(life3, 35, 0)
 
         self._lives = [life1, life2, life3]
 
         self._t.ht()
 
-        quitButton = tkinter.Button(frame, text = "Quit", command=self._handle_exit)
+        quitButton = tkinter.Button(frame, text="Quit",
+                                    command=self._handle_exit)
         quitButton.pack()
 
         self._screen.tracer(0)
@@ -185,7 +195,7 @@ class Screen:
             function
         :type milli: int
         """
-        self._screen.ontimer(func,milli)
+        self._screen.ontimer(func, milli)
 
     def _bind_key(self, key, func):
         """
@@ -201,7 +211,7 @@ class Screen:
         """
 
         if key not in self._boundKeys:
-            self._screen.onkeypress(func,key)
+            self._screen.onkeypress(func, key)
             self._boundKeys.append(key)
 
     def _bind_keys(self):
@@ -267,7 +277,7 @@ class Screen:
 
     def _get_asteroid_object(self, size):
         asteroid = RawTurtle(self._cv)
-        asteroid.shape(ShapesMaster.ASTEROID_BASE_SHAPE%size)
+        asteroid.shape(ShapesMaster.ASTEROID_BASE_SHAPE % size)
         return asteroid
 
     def _get_torpedo_object(self):
@@ -276,9 +286,9 @@ class Screen:
         torpedo.color("blue")
         return torpedo
 
-    def _draw_object(self,obj,x,y,heading=None):
+    def _draw_object(self, obj, x, y, heading=None):
         obj.penup()
-        obj.goto(x,y)
+        obj.goto(x, y)
         if heading:
             obj.setheading(heading)
         obj.pendown()
@@ -300,15 +310,14 @@ class Screen:
         :param size: The size of the asteroid (this should be in [1,2,3])
         :type size: int
         """
-        if size not in [1,2,3]:
-            print("Error: Wrong asteroid size: %d"%size)
+        if size not in [1, 2, 3]:
+            print("Error: Wrong asteroid size: %d" % size)
             sys.exit(0)
         elif id(asteroid) in self._asteroids:
-            print("Error: Asteroid id (%d) already exists"%asteroid_id)
+            print("Error: Asteroid id (%d) already exists" % asteroid_id)
             sys.exit(0)
         asteroid_obj = self._get_asteroid_object(size)
-        self._asteroids[ id(asteroid) ] = asteroid_obj
-
+        self._asteroids[id(asteroid)] = asteroid_obj
 
     def register_torpedo(self, torpedo):
         """
@@ -318,12 +327,12 @@ class Screen:
         :type asteroid: Torpedo
         """
         if id(torpedo) in self._torpedos:
-            print("Error: Torpedo id (%d) already exists"%torpedo_id)
+            print("Error: Torpedo id (%d) already exists" % torpedo_id)
             sys.exit(0)
         torpedo_obj = self._get_torpedo_object()
-        self._torpedos[ id(torpedo) ] = torpedo_obj
+        self._torpedos[id(torpedo)] = torpedo_obj
 
-    def draw_ship(self,x,y, heading):
+    def draw_ship(self, x, y, heading):
         """
         Draw the ship at the given coordinates with the given heading
 
@@ -351,7 +360,7 @@ class Screen:
         """
         asteroid_id = id(asteroid)
         if asteroid_id not in self._asteroids:
-            print("Error: Asteroid id (%d) not found. "%asteroid_id +
+            print("Error: Asteroid id (%d) not found. " % asteroid_id +
                   "Are you sure there is such an asteroid?")
             sys.exit(0)
 
@@ -372,7 +381,7 @@ class Screen:
         """
         torpedo_id = id(torpedo)
         if torpedo_id not in self._torpedos:
-            print("Torpedo id (%d) not found. "%torpedo_id +
+            print("Torpedo id (%d) not found. " % torpedo_id +
                   "Are you sure there is such a torpedo?")
             sys.exit(0)
 
@@ -381,8 +390,7 @@ class Screen:
     def _remove_object(self, obj):
         obj.penup()
         obj.ht()
-        obj.goto(Screen.SCREEN_MAX_X, Screen.SCREEN_MAX_Y*2)
-
+        obj.goto(Screen.SCREEN_MAX_X, Screen.SCREEN_MAX_Y * 2)
 
     def unregister_torpedo(self, torpedo):
         """
@@ -393,13 +401,12 @@ class Screen:
         """
         torpedo_id = id(torpedo)
         if torpedo_id not in self._torpedos:
-            print("Torpedo id (%d) not found. "%torpedo_id +
+            print("Torpedo id (%d) not found. " % torpedo_id +
                   "Are you sure there is such a torpedo?")
             sys.exit(0)
-        torpedo_obj = self._torpedos[ torpedo_id ]
-        self._remove_object( torpedo_obj )
-        self._torpedos.pop( torpedo_id )
-
+        torpedo_obj = self._torpedos[torpedo_id]
+        self._remove_object(torpedo_obj)
+        self._torpedos.pop(torpedo_id)
 
     def unregister_asteroid(self, asteroid):
         """
@@ -410,23 +417,21 @@ class Screen:
         """
         asteroid_id = id(asteroid)
         if asteroid_id not in self._asteroids:
-            print("Asteroid id (%d) not found. "%asteroid_id +
+            print("Asteroid id (%d) not found. " % asteroid_id +
                   "Are you sure there is such an asteroid?")
             sys.exit(0)
-        asteroid_obj = self._asteroids[ asteroid_id ]
-        self._remove_object( asteroid_obj )
-        self._asteroids.pop( asteroid_id )
+        asteroid_obj = self._asteroids[asteroid_id]
+        self._remove_object(asteroid_obj)
+        self._asteroids.pop(asteroid_id)
 
     def _clear_screen(self):
         self._cv.delete('all')
-
 
     def should_end(self):
         """
         :returns: True if the game should end or not (if "q" was pressed or not)
         """
         return self._endGame
-
 
     def is_left_pressed(self):
         """
@@ -468,7 +473,7 @@ class Screen:
         self._specialTorpedFired -= 1 if res else 0
         return res
 
-    def show_message(self,title, msg):
+    def show_message(self, title, msg):
         """
         This is a method used to show messages in the game.
 
@@ -477,7 +482,7 @@ class Screen:
         :param msg: The message to show in the message box.
         :type msg: str
         """
-        tkinter.messagebox.showinfo(str(title), str(msg) )
+        tkinter.messagebox.showinfo(str(title), str(msg))
 
     def end_game(self):
         """
