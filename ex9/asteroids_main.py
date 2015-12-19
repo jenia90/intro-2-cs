@@ -2,7 +2,9 @@ import sys
 from screen import Screen
 from ship import Ship
 from asteroid import Asteroid
-from math import cos, sin
+from torpedo import Torpedo
+from operator import add
+from math import sqrt
 from random import \
     randint  # Add this to README: https://docs.python.org/3/library/random.html
 
@@ -15,18 +17,18 @@ class GameRunner:
     VELOCITY_MAX, VELOCITY_MIN = 5, 1
     ROTATE_LEFT, ROTATE_RIGHT = 7, -7
     HIT_TITLE, HIT_MSG = 'Uh-oh', 'You got hit by an asteroid!'
+    TORPEDO_LIFESPAN = 200
+    MAX_TORPEDOS_AT_ONCE = 15
+    SCORE_OPTIONS = 100, 50, 20  # Depends on the size of the hit asteroid
 
     def __init__(self, asteroids_amnt):
         self._screen = Screen()
-
         self.screen_max = Screen.SCREEN_MAX_X, Screen.SCREEN_MAX_Y
         self.screen_min = Screen.SCREEN_MIN_X, Screen.SCREEN_MIN_Y
-
         self.screen_dist = self.screen_max[self.X] - self.screen_min[self.X], \
                            self.screen_max[self.Y] - self.screen_min[self.Y]
 
         self.ship = Ship(self.INIT_SHIP_POS, self.INIT_SHIP_VELOCITY)
-
         self.asteroids = []
 
         for i in range(asteroids_amnt):
@@ -48,6 +50,11 @@ class GameRunner:
             asteroid = Asteroid(asteroid_pos, asteroid_vel)
             self._screen.register_asteroid(asteroid, Asteroid.INIT_SIZE)
             self.asteroids.append(asteroid)
+
+        self.score = 0
+        self.torpedo_lives = []
+        self.torpedo_count = 0
+        self.torpedos = []
 
     def run(self):
         self._do_loop()
@@ -80,15 +87,16 @@ class GameRunner:
     def _game_loop(self):
         ship_x, ship_y = self.ship.get_position()
         self._screen.draw_ship(ship_x, ship_y, self.ship.get_heading())
+        ship_vel = self.ship.get_velocity()
 
         # Move ship
-        self.ship.set_position(self.get_new_coords(self.ship.get_velocity(),
-                                                   (ship_x, ship_y)))
+        self.ship.set_position(self.get_new_coords(ship_vel, (ship_x, ship_y)))
 
-        # Rotate ship
+        # Rotate ship to the left
         if self._screen.is_left_pressed():
             self.ship.set_heading(self.ship.get_heading() + self.ROTATE_LEFT)
 
+        # Rotate ship to the right
         elif self._screen.is_right_pressed():
             self.ship.set_heading(self.ship.get_heading() + self.ROTATE_RIGHT)
 
@@ -96,19 +104,87 @@ class GameRunner:
         elif self._screen.is_up_pressed():
             self.ship.accelerate()
 
+        # Fire torpedo
+        elif self._screen.is_space_pressed():
+            if self.torpedo_count != self.MAX_TORPEDOS_AT_ONCE:
+                torpedo = Torpedo((ship_x, ship_y), ship_vel,
+                                  self.ship.get_heading())
+                self._screen.register_torpedo(torpedo)
+                self.torpedo_lives.append(self.TORPEDO_LIFESPAN)
+                self.torpedo_count += 1
+                self.torpedos.append(torpedo)
+
         for asteroid in self.asteroids:
             ast_x, ast_y = asteroid.get_position()
             self._screen.draw_asteroid(asteroid, ast_x, ast_y)
+            ast_vel = asteroid.get_velocity()
 
             # Move asteroid
-            asteroid.set_position(self.get_new_coords(asteroid.get_velocity(),
-                                                      (ast_x, ast_y)))
+            asteroid.set_position(self.get_new_coords(ast_vel, (ast_x, ast_y)))
 
+            # From here till the end of the loop, the code handles
+            # intersections (if any) of the asteroid with the ship or with a
+            # torpedo
             if asteroid.has_intersection(self.ship):
                 self._screen.remove_life()
                 self._screen.show_message(self.HIT_TITLE, self.HIT_MSG)
                 self._screen.unregister_asteroid(asteroid)
                 self.asteroids.remove(asteroid)
+
+            ast_size = asteroid.get_size()
+
+            for torpedo in self.torpedos:
+                if asteroid.has_intersection(torpedo):
+                    for i in range(len(self.SCORE_OPTIONS)):
+                        if ast_size == i + 1:
+                            self.score += self.SCORE_OPTIONS[i]
+                            self._screen.set_score(self.score)
+
+                        if i != 0:
+                            # Split the asteroid into 2 smaller asteroids
+                            # Calculate new velocity
+                            den = sqrt(ast_vel[self.X] ** 2 +
+                                       ast_vel[self.Y] ** 2)
+                            nom = map(add, ast_vel, torpedo.get_velocity())
+                            new_vel = tuple(v / den for v in nom)
+                            # Create new asteroids
+                            ast_1 = Asteroid((ast_x, ast_y), new_vel, i)
+                            self._screen.register_asteroid(ast_1, i)
+                            self.asteroids.append(ast_1)
+                            # Second asteroid with the opposing velocity
+                            ast_2 = Asteroid((ast_x, ast_y),
+                                             tuple(v * -1 for v in new_vel), i)
+                            self._screen.register_asteroid(ast_2, i)
+                            self.asteroids.append(ast_2)
+
+                        else:
+                            # Remove smallest asteroid
+                            self._screen.unregister_asteroid(asteroid)
+                            self.asteroids.remove(asteroid)
+
+                    self._screen.unregister_torpedo(torpedo)
+                    del self.torpedo_lives[self.torpedos.index(torpedo)]
+                    self.torpedo_count -= 1
+                    self.torpedos.remove(torpedo)
+
+        for torpedo in self.torpedos:
+            torp_x, torp_y = torpedo.get_position()
+            self._screen.draw_torpedo(torpedo, torp_x, torp_y,
+                                      torpedo.get_heading())
+
+            # Move torpedo
+            torpedo.set_position(self.get_new_coords(torpedo.get_velocity(),
+                                                     (torp_x, torp_y)))
+
+            # Decrease lifespan of the torpedo
+            torp_index = self.torpedos.index(torpedo)
+            self.torpedo_lives[torp_index] -= 1
+
+            if self.torpedo_lives[torp_index] == 0:
+                self._screen.unregister_torpedo(torpedo)
+                del self.torpedo_lives[torp_index]
+                self.torpedo_count -= 1
+                self.torpedos.remove(torpedo)
 
 
 def main(amnt):

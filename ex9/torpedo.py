@@ -7,6 +7,7 @@ class Torpedo:
     """
     DEG_TO_RAD = pi / 180
     THRUST_COEFFICIENT = 2
+    RADIUS = 4
 
     def __init__(self, position, ship_velocity, heading):
         """
