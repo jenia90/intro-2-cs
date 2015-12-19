@@ -26,10 +26,12 @@ class Asteroid:
         """
         Checks if our asteroid has intersection with another object
         :param obj: the object that might intersect
-        :return:
+        :return: True if distance smaller or equal to sum of radiuses else False
         """
         obj_x, obj_y = obj.get_position()
         pos_x, pos_y = self.position
+
+        # calculates the distance between the asteroid and the other object
         distance = sqrt((obj_x - pos_x) ** 2 + (obj_y - pos_y) ** 2)
 
         return distance <= self.radius + obj.RADIUS
@@ -48,6 +50,13 @@ class Asteroid:
         """
         return self.position
 
+    def set_position(self, position):
+        """
+        Sets the position of the asteroid
+        :param position: position as (x, y) tuple
+        """
+        self.position = position
+
     def get_velocity(self):
         """
         Gets the current velocity of the asteroid
@@ -55,12 +64,3 @@ class Asteroid:
         """
         return self.velocity
 
-    def get_radius(self):
-        """
-        Gets the radius of an asteroid
-        :return: asteroid radius as int
-        """
-        return self.radius
-
-    def set_position(self, position):
-        self.position = position

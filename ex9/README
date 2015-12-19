@@ -1,0 +1,44 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: Ben Faingold
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/
+    Apress Pro Python 2nd Edition
+
+===============================
+=  README for ex9: Asteroids  =
+===============================
+
+Simple asteroids game implementation using the turtle module to draw the game graphics.
+
+============
+=  Usage:  =
+============
+
+python3 asteroids_main.py <asteroids_amount>
+
+==================
+=  Description:  =
+==================
+
+Simple asteroids game where the player controls a ship in a field of asteroids. The main object of the game is to shoot
+the asteroids while trying to avoid collisions with them. When a torpedo hits one of the asteroids it splits it into
+smaller ones.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		        This file
+AUTHORS             Contains list of people who worked on the exercise
+asteroid.py         Contains the Asteroid object class implementation
+asteroids_main.py   Contains the main game logic
+ship.py             Contains the Ship object class implementation
+torpedo.py          Contains the Torpedo object class implementation
+
+======================
+=  Special Comments  =
+======================

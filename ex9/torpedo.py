@@ -30,13 +30,29 @@ class Torpedo:
         self.heading = heading
 
     def get_position(self):
+        """
+        Gets torpedo's position
+        :return: tuple containing (x, y) position coordinates
+        """
         return self.position
 
     def get_velocity(self):
+        """
+        Gets torpedo's velocity
+        :return: tuple containing the velocity on each axis (x, y)
+        """
         return self.velocity
 
     def get_heading(self):
+        """
+        Gets torpedo's heading
+        :return: int representing the angle to X axis (in degrees)
+        """
         return self.heading
 
     def set_position(self, position):
+        """
+        Sets torpedo's position
+        :param position: tuple containing the (x, y) coordinates
+        """
         self.position = position

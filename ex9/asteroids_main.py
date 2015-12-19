@@ -28,6 +28,10 @@ class GameRunner:
     MAX_SHIP_LIVES = 3
 
     def __init__(self, asteroids_amnt):
+        """
+        Initializes the GameRunner class and all the game related parameters
+        :param asteroids_amnt: int representing the amount of asteroids
+        """
         self._screen = Screen()
         self.screen_max = Screen.SCREEN_MAX_X, Screen.SCREEN_MAX_Y
         self.screen_min = Screen.SCREEN_MIN_X, Screen.SCREEN_MIN_Y
@@ -37,7 +41,10 @@ class GameRunner:
         self.ship = Ship(self.INIT_SHIP_POS, self.INIT_SHIP_VELOCITY)
         self.asteroids = []
 
+        # This section of code creates a list of asteroid objects with random
+        # location and velocity parameters
         for i in range(asteroids_amnt):
+            # Generates random values for asteroid object location
             asteroid_pos = randint(self.screen_min[self.X],
                                    self.screen_max[self.X]), \
                            randint(self.screen_min[self.Y],
@@ -50,11 +57,17 @@ class GameRunner:
                                randint(self.screen_min[self.Y],
                                        self.screen_max[self.Y])
 
+            # Generates random values for asteroid object speed on x and y axis
             asteroid_vel = randint(self.VELOCITY_MIN, self.VELOCITY_MAX), \
                            randint(self.VELOCITY_MIN, self.VELOCITY_MAX)
 
+            # Creates the actual asteroid object
             asteroid = Asteroid(asteroid_pos, asteroid_vel)
+
+            # Registers it with the game engine
             self._screen.register_asteroid(asteroid, Asteroid.INIT_SIZE)
+
+            # Appends to the list of asteroid objects
             self.asteroids.append(asteroid)
 
         self.score = 0
@@ -102,6 +115,9 @@ class GameRunner:
         sys.exit()
 
     def _game_loop(self):
+        """
+        Main game logic method
+        """
         ship_x, ship_y = self.ship.get_position()
         self._screen.draw_ship(ship_x, ship_y, self.ship.get_heading())
         ship_vel = self.ship.get_velocity()
@@ -131,6 +147,7 @@ class GameRunner:
                 self.torpedo_count += 1
                 self.torpedos.append(torpedo)
 
+        # This section of code handles each asteroid objects parameter updates
         for asteroid in self.asteroids:
             ast_x, ast_y = asteroid.get_position()
             self._screen.draw_asteroid(asteroid, ast_x, ast_y)
@@ -180,11 +197,13 @@ class GameRunner:
                             self._screen.unregister_asteroid(asteroid)
                             self.asteroids.remove(asteroid)
 
+                    # Removes the torpedo after it hit the asteroid
                     self._screen.unregister_torpedo(torpedo)
                     del self.torpedo_lives[self.torpedos.index(torpedo)]
                     self.torpedo_count -= 1
                     self.torpedos.remove(torpedo)
 
+        # This section of code updates torpedos parameters
         for torpedo in self.torpedos:
             torp_x, torp_y = torpedo.get_position()
             self._screen.draw_torpedo(torpedo, torp_x, torp_y,
@@ -198,18 +217,22 @@ class GameRunner:
             torp_index = self.torpedos.index(torpedo)
             self.torpedo_lives[torp_index] -= 1
 
+            # Remove torpedo after it's lifespan is depleted
             if self.torpedo_lives[torp_index] == 0:
                 self._screen.unregister_torpedo(torpedo)
                 del self.torpedo_lives[torp_index]
                 self.torpedo_count -= 1
                 self.torpedos.remove(torpedo)
 
+        # Exit game and show win message when all asteroids are destroyed
         if not self.asteroids:
             self.exit_game(self.WON_TITLE, self.WON_MSG)
 
+        # Exit game and show loss message when ship is out of lives
         if self.ship_lives == 0:
             self.exit_game(self.LOST_TITLE, self.LOST_MSG)
 
+        # Exit game on request
         if self._screen.should_end():
             self.exit_game(self.QUIT_TITLE, self.QUIT_MSG)
 
