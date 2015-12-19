@@ -169,7 +169,7 @@ class GameRunner:
             self.ship.accelerate()
 
         # Fire torpedo
-        elif self._screen.is_space_pressed():
+        if self._screen.is_space_pressed():
             if self.torpedo_count != self.MAX_TORPEDOS_AT_ONCE:
                 torpedo = Torpedo((ship_x, ship_y), ship_vel,
                                   self.ship.get_heading())
