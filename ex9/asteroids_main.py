@@ -31,7 +31,7 @@ class GameRunner:
     INIT_AST_SIZE = 3
     TORPEDO_LIFESPAN = 200
     MAX_TORPEDOS_AT_ONCE = 15
-    SCORE_OPTIONS = 100, 50, 20  # Depends on the size of the hit asteroid
+    SCORE_OPTIONS = 100, 50, 20  # (Index + 1) is the size of the hit asteroid
     MAX_SHIP_LIVES = 3
 
     def __init__(self, asteroids_amnt):
@@ -149,12 +149,13 @@ class GameRunner:
         """
         Main game logic method
         """
-        ship_x, ship_y = self.ship.get_position()
-        self._screen.draw_ship(ship_x, ship_y, self.ship.get_heading())
+        ship_pos = self.ship.get_position()
+        self._screen.draw_ship(ship_pos[self.X], ship_pos[self.Y],
+                               self.ship.get_heading())
         ship_vel = self.ship.get_velocity()
 
         # Move ship
-        self.ship.set_position(self.get_new_coords(ship_vel, (ship_x, ship_y)))
+        self.ship.set_position(self.get_new_coords(ship_vel, ship_pos))
 
         # Rotate ship to the left
         if self._screen.is_left_pressed():
@@ -171,8 +172,7 @@ class GameRunner:
         # Fire torpedo
         if self._screen.is_space_pressed():
             if self.torpedo_count != self.MAX_TORPEDOS_AT_ONCE:
-                torpedo = Torpedo((ship_x, ship_y), ship_vel,
-                                  self.ship.get_heading())
+                torpedo = Torpedo(ship_pos, ship_vel, self.ship.get_heading())
                 self._screen.register_torpedo(torpedo)
                 self.torpedo_lives.append(self.TORPEDO_LIFESPAN)
                 self.torpedo_count += 1
@@ -180,12 +180,13 @@ class GameRunner:
 
         # This section of code handles each asteroid objects parameter updates
         for asteroid in self.asteroids:
-            ast_x, ast_y = asteroid.get_position()
-            self._screen.draw_asteroid(asteroid, ast_x, ast_y)
+            ast_pos = asteroid.get_position()
+            self._screen.draw_asteroid(asteroid,
+                                       ast_pos[self.X], ast_pos[self.Y])
             ast_vel = asteroid.get_velocity()
 
             # Move asteroid
-            asteroid.set_position(self.get_new_coords(ast_vel, (ast_x, ast_y)))
+            asteroid.set_position(self.get_new_coords(ast_vel, ast_pos))
 
             # From here till the end of the loop, the code handles
             # intersections (if any) of the asteroid with the ship or with a
@@ -219,9 +220,9 @@ class GameRunner:
                             nom = map(add, ast_vel, torpedo.get_velocity())
                             new_vel = tuple(v / den for v in nom)
                             # Create new asteroids
-                            self.add_asteroid((ast_x, ast_y), new_vel, i)
+                            self.add_asteroid(ast_pos, new_vel, i)
                             # Second asteroid with the opposing velocity
-                            self.add_asteroid((ast_x, ast_y),
+                            self.add_asteroid(ast_pos,
                                               tuple(v * -1 for v in new_vel),
                                               i)
 
