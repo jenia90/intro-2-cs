@@ -23,8 +23,9 @@ class Torpedo:
         self.position = position
 
         s_vel_x, s_vel_y = ship_velocity
-        self.velocity = s_vel_x + self.THRUST_COEFFICIENT * cos(s_vel_x), \
-                        s_vel_y + self.THRUST_COEFFICIENT * sin(s_vel_y)
+        heading_rad = heading * self.DEG_TO_RAD
+        self.velocity = s_vel_x + self.THRUST_COEFFICIENT * cos(heading_rad), \
+                        s_vel_y + self.THRUST_COEFFICIENT * sin(heading_rad)
 
         self.heading = heading
 

@@ -12,14 +12,21 @@ DEFAULT_ASTEROIDS_NUM = 5
 
 
 class GameRunner:
+    HIT_TITLE, HIT_MSG = "Uh-oh", "You got hit by an asteroid!"
+    WON_TITLE, WON_MSG = "The force is strong with you!", \
+                         "Congrats! you've won, exiting now."
+    LOST_TITLE, LOST_MSG = "Better luck next time!", \
+                           "You've lost, exiting now."
+    QUIT_TITLE, QUIT_MSG = "Afraid of space?", \
+                           "You've decided to cowardly quit, exiting now."
     X, Y = 0, 1
     INIT_SHIP_POS, INIT_SHIP_VELOCITY = (-100, 0), (1, 0)
     VELOCITY_MAX, VELOCITY_MIN = 5, 1
     ROTATE_LEFT, ROTATE_RIGHT = 7, -7
-    HIT_TITLE, HIT_MSG = 'Uh-oh', 'You got hit by an asteroid!'
     TORPEDO_LIFESPAN = 200
     MAX_TORPEDOS_AT_ONCE = 15
     SCORE_OPTIONS = 100, 50, 20  # Depends on the size of the hit asteroid
+    MAX_SHIP_LIVES = 3
 
     def __init__(self, asteroids_amnt):
         self._screen = Screen()
@@ -55,6 +62,7 @@ class GameRunner:
         self.torpedo_lives = []
         self.torpedo_count = 0
         self.torpedos = []
+        self.ship_lives = self.MAX_SHIP_LIVES
 
     def run(self):
         self._do_loop()
@@ -68,21 +76,31 @@ class GameRunner:
         self._screen.update()
         self._screen.ontimer(self._do_loop, 5)
 
-    def get_new_coords(self, velocity, old_coord):
+    def get_new_coords(self, velocity, old_coords):
         """
-        Calculates the new coordinate of a ship, asteroid or torpedo
+        Calculates the new coordinates of a ship, asteroid or torpedo
         :param velocity: Velocity of the object
         :type velocity: 2D floats tuple
-        :param old_coord: Old coordinate of the object
-        :type old_coord: 2D integers tuple
+        :param old_coords: Old coordinates of the object
+        :type old_coords: 2D integers tuple
         :return: The new coordinates
         """
         min_coord_x, min_coord_y = self.screen_min
 
-        return ((velocity[self.X] + old_coord[self.X] - min_coord_x) %
+        return ((velocity[self.X] + old_coords[self.X] - min_coord_x) %
                 self.screen_dist[self.X] + min_coord_x,
-                (velocity[self.Y] + old_coord[self.Y] - min_coord_y) %
+                (velocity[self.Y] + old_coords[self.Y] - min_coord_y) %
                 self.screen_dist[self.Y] + min_coord_y)
+
+    def exit_game(self, title, msg):
+        """
+        Exits the game with an alert message
+        :param title: The message's title
+        :param msg: A message
+        """
+        self._screen.show_message(title, msg)
+        self._screen.end_game()
+        sys.exit()
 
     def _game_loop(self):
         ship_x, ship_y = self.ship.get_position()
@@ -97,11 +115,11 @@ class GameRunner:
             self.ship.set_heading(self.ship.get_heading() + self.ROTATE_LEFT)
 
         # Rotate ship to the right
-        elif self._screen.is_right_pressed():
+        if self._screen.is_right_pressed():
             self.ship.set_heading(self.ship.get_heading() + self.ROTATE_RIGHT)
 
         # Accelerate ship
-        elif self._screen.is_up_pressed():
+        if self._screen.is_up_pressed():
             self.ship.accelerate()
 
         # Fire torpedo
@@ -127,6 +145,7 @@ class GameRunner:
             # torpedo
             if asteroid.has_intersection(self.ship):
                 self._screen.remove_life()
+                self.ship_lives -= 1
                 self._screen.show_message(self.HIT_TITLE, self.HIT_MSG)
                 self._screen.unregister_asteroid(asteroid)
                 self.asteroids.remove(asteroid)
@@ -186,8 +205,21 @@ class GameRunner:
                 self.torpedo_count -= 1
                 self.torpedos.remove(torpedo)
 
+        if not self.asteroids:
+            self.exit_game(self.WON_TITLE, self.WON_MSG)
+
+        if self.ship_lives == 0:
+            self.exit_game(self.LOST_TITLE, self.LOST_MSG)
+
+        if self._screen.should_end():
+            self.exit_game(self.QUIT_TITLE, self.QUIT_MSG)
 
 def main(amnt):
+    """
+    Runs the game
+    :param amnt: The desired amount of asteroids
+    :return:
+    """
     runner = GameRunner(amnt)
     runner.run()
 
