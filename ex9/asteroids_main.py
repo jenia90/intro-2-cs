@@ -201,30 +201,27 @@ class GameRunner:
 
             for torpedo in self.torpedos:
                 if asteroid.has_intersection(torpedo):
-                    for i in range(len(self.SCORE_OPTIONS)):
-                        if ast_size == i + 1:
-                            self.score += self.SCORE_OPTIONS[i]
-                            self._screen.set_score(self.score)
-                            # Split the asteroid into 2 smaller ones
-                            # Remove original asteroid
-                            self.remove_asteroid(asteroid)
+                    i = ast_size - 1  # Score option's index
+                    self.score += self.SCORE_OPTIONS[i]
+                    self._screen.set_score(self.score)
+                    # Split the asteroid into 2 smaller ones
+                    # Remove original asteroid
+                    self.remove_asteroid(asteroid)
 
-                            if i == 0:
-                                # Iteration can be terminated if the removed
-                                # asteroid had the smallest size
-                                break
+                    if i == 0:
+                        # Iteration can be terminated if the removed
+                        # asteroid had the smallest size
+                        break
 
-                            # Calculate new velocity
-                            den = sqrt(ast_vel[self.X] ** 2 +
-                                       ast_vel[self.Y] ** 2)
-                            nom = map(add, ast_vel, torpedo.get_velocity())
-                            new_vel = tuple(v / den for v in nom)
-                            # Create new asteroids
-                            self.add_asteroid(ast_pos, new_vel, i)
-                            # Second asteroid with the opposing velocity
-                            self.add_asteroid(ast_pos,
-                                              tuple(v * -1 for v in new_vel),
-                                              i)
+                    # Calculate new velocity
+                    den = sqrt(ast_vel[self.X] ** 2 + ast_vel[self.Y] ** 2)
+                    nom = map(add, ast_vel, torpedo.get_velocity())
+                    new_vel = tuple(v / den for v in nom)
+                    # Create new asteroids
+                    self.add_asteroid(ast_pos, new_vel, i)
+                    # Second asteroid with the opposing velocity
+                    self.add_asteroid(ast_pos, tuple(v * -1 for v in new_vel),
+                                      i)
 
                     # Removes the torpedo after it hit the asteroid
                     self.remove_torpedo(self.torpedos.index(torpedo), torpedo)
