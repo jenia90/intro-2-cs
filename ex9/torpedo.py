@@ -1,3 +1,9 @@
+###############################################################################
+# FILE: torpedo.py                                                            #
+# WRITERS: Yevgeni Dysin, jenia90, 320884216; Ben Faingold, ben_f, 208482604  #
+# EXERCISE: intro2cs ex9 2015-2016                                            #
+# DESCRIPTION: Contains the Torpedo object class implementation               #
+###############################################################################
 from math import pi, cos, sin
 
 

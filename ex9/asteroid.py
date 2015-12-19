@@ -1,3 +1,9 @@
+###############################################################################
+# FILE: asteroid.py                                                           #
+# WRITERS: Yevgeni Dysin, jenia90, 320884216; Ben Faingold, ben_f, 208482604  #
+# EXERCISE: intro2cs ex9 2015-2016                                            #
+# DESCRIPTION: Contains the Asteroid object class implementation              #
+###############################################################################
 from math import sqrt
 
 
@@ -5,11 +11,10 @@ class Asteroid:
     """
     Asteroid object class definition
     """
-    INIT_SIZE = 3
     SIZE_COEFFICIENT = 10
     NORMAL_FACTOR = -5
 
-    def __init__(self, position, velocity, size=INIT_SIZE):
+    def __init__(self, position, velocity, size):
         """
         Constructor for asteroid class
         :param position: position as coordinates tuple (x, y)
@@ -26,7 +31,7 @@ class Asteroid:
         """
         Checks if our asteroid has intersection with another object
         :param obj: the object that might intersect
-        :return: True if distance smaller or equal to sum of radiuses else False
+        :return: True if distance lesser or equal to sum of radiuses else False
         """
         obj_x, obj_y = obj.get_position()
         pos_x, pos_y = self.position

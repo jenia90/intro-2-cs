@@ -3,8 +3,10 @@
     <words>
       <w>amnt</w>
       <w>coords</w>
+      <w>radiuses</w>
       <w>torp</w>
       <w>torpedos</w>
+      <w>unregisters</w>
     </words>
   </dictionary>
 </component>

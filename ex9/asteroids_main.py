@@ -1,3 +1,9 @@
+###############################################################################
+# FILE: asteroids_main.py                                                     #
+# WRITERS: Yevgeni Dysin, jenia90, 320884216; Ben Faingold, ben_f, 208482604  #
+# EXERCISE: intro2cs ex9 2015-2016                                            #
+# DESCRIPTION: Contains the main game logic                                   #
+###############################################################################
 import sys
 from screen import Screen
 from ship import Ship
@@ -5,7 +11,7 @@ from asteroid import Asteroid
 from torpedo import Torpedo
 from operator import add
 from math import sqrt
-from random import randint  # Add this to README: https://docs.python.org/3/library/random.html
+from random import randint
 
 DEFAULT_ASTEROIDS_NUM = 5
 
@@ -20,8 +26,9 @@ class GameRunner:
                            "You've decided to cowardly quit, exiting now."
     X, Y = 0, 1
     INIT_SHIP_POS, INIT_SHIP_VELOCITY = (-100, 0), (1, 0)
-    VELOCITY_MAX, VELOCITY_MIN = 5, 1
     ROTATE_LEFT, ROTATE_RIGHT = 7, -7
+    AST_VEL_MAX, AST_VEL_MIN = 5, 1
+    INIT_AST_SIZE = 3
     TORPEDO_LIFESPAN = 200
     MAX_TORPEDOS_AT_ONCE = 15
     SCORE_OPTIONS = 100, 50, 20  # Depends on the size of the hit asteroid
@@ -58,17 +65,10 @@ class GameRunner:
                                        self.screen_max[self.Y])
 
             # Generates random values for asteroid object speed on x and y axis
-            asteroid_vel = randint(self.VELOCITY_MIN, self.VELOCITY_MAX), \
-                           randint(self.VELOCITY_MIN, self.VELOCITY_MAX)
+            asteroid_vel = randint(self.AST_VEL_MIN, self.AST_VEL_MAX), \
+                           randint(self.AST_VEL_MIN, self.AST_VEL_MAX)
 
-            # Creates the actual asteroid object
-            asteroid = Asteroid(asteroid_pos, asteroid_vel)
-
-            # Registers it with the game engine
-            self._screen.register_asteroid(asteroid, Asteroid.INIT_SIZE)
-
-            # Appends to the list of asteroid objects
-            self.asteroids.append(asteroid)
+            self.add_asteroid(asteroid_pos, asteroid_vel, self.INIT_AST_SIZE)
 
         self.score = 0
         self.torpedo_lives = []
@@ -103,6 +103,37 @@ class GameRunner:
                 self.screen_dist[self.X] + min_coord_x,
                 (velocity[self.Y] + old_coords[self.Y] - min_coord_y) %
                 self.screen_dist[self.Y] + min_coord_y)
+
+    def add_asteroid(self, position, velocity, size):
+        """
+        Does all operations needed to add an asteroid
+        :param position: position as coordinates tuple (x, y)
+        :param velocity: velocity as coordinates tuple (x, y)
+        :param size: size of the rock (int)
+        """
+        asteroid = Asteroid(position, velocity, size)
+        self._screen.register_asteroid(asteroid, size)
+        self.asteroids.append(asteroid)
+
+    def remove_asteroid(self, asteroid):
+        """
+        Does all operations needed to remove an asteroid
+        :param asteroid: Asteroid object instance about to be removed
+        """
+        self._screen.unregister_asteroid(asteroid)
+        self.asteroids.remove(asteroid)
+
+    def remove_torpedo(self, torpedo_index, torpedo):
+        """
+        Does all operations needed to remove a torpedo
+        :param torpedo_index: Torpedo's index from every relevant list
+        :type torpedo_index: int
+        :param torpedo: Torpedo object instance about to be removed
+        """
+        self._screen.unregister_torpedo(torpedo)
+        del self.torpedo_lives[torpedo_index]
+        self.torpedo_count -= 1
+        self.torpedos.remove(torpedo)
 
     def exit_game(self, title, msg):
         """
@@ -163,8 +194,7 @@ class GameRunner:
                 self._screen.remove_life()
                 self.ship_lives -= 1
                 self._screen.show_message(self.HIT_TITLE, self.HIT_MSG)
-                self._screen.unregister_asteroid(asteroid)
-                self.asteroids.remove(asteroid)
+                self.remove_asteroid(asteroid)
 
             ast_size = asteroid.get_size()
 
@@ -174,34 +204,29 @@ class GameRunner:
                         if ast_size == i + 1:
                             self.score += self.SCORE_OPTIONS[i]
                             self._screen.set_score(self.score)
+                            # Split the asteroid into 2 smaller ones
+                            # Remove original asteroid
+                            self.remove_asteroid(asteroid)
 
-                        if i != 0:
-                            # Split the asteroid into 2 smaller asteroids
+                            if i == 0:
+                                # Iteration can be terminated if the removed
+                                # asteroid had the smallest size
+                                break
+
                             # Calculate new velocity
                             den = sqrt(ast_vel[self.X] ** 2 +
                                        ast_vel[self.Y] ** 2)
                             nom = map(add, ast_vel, torpedo.get_velocity())
                             new_vel = tuple(v / den for v in nom)
                             # Create new asteroids
-                            ast_1 = Asteroid((ast_x, ast_y), new_vel, i)
-                            self._screen.register_asteroid(ast_1, i)
-                            self.asteroids.append(ast_1)
+                            self.add_asteroid((ast_x, ast_y), new_vel, i)
                             # Second asteroid with the opposing velocity
-                            ast_2 = Asteroid((ast_x, ast_y),
-                                             tuple(v * -1 for v in new_vel), i)
-                            self._screen.register_asteroid(ast_2, i)
-                            self.asteroids.append(ast_2)
-
-                        else:
-                            # Remove smallest asteroid
-                            self._screen.unregister_asteroid(asteroid)
-                            self.asteroids.remove(asteroid)
+                            self.add_asteroid((ast_x, ast_y),
+                                              tuple(v * -1 for v in new_vel),
+                                              i)
 
                     # Removes the torpedo after it hit the asteroid
-                    self._screen.unregister_torpedo(torpedo)
-                    del self.torpedo_lives[self.torpedos.index(torpedo)]
-                    self.torpedo_count -= 1
-                    self.torpedos.remove(torpedo)
+                    self.remove_torpedo(self.torpedos.index(torpedo), torpedo)
 
         # This section of code updates torpedos parameters
         for torpedo in self.torpedos:
@@ -217,12 +242,9 @@ class GameRunner:
             torp_index = self.torpedos.index(torpedo)
             self.torpedo_lives[torp_index] -= 1
 
-            # Remove torpedo after it's lifespan is depleted
+            # Remove torpedo after its lifespan is depleted
             if self.torpedo_lives[torp_index] == 0:
-                self._screen.unregister_torpedo(torpedo)
-                del self.torpedo_lives[torp_index]
-                self.torpedo_count -= 1
-                self.torpedos.remove(torpedo)
+                self.remove_torpedo(torp_index, torpedo)
 
         # Exit game and show win message when all asteroids are destroyed
         if not self.asteroids:

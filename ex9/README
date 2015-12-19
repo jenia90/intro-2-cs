@@ -2,34 +2,41 @@ jenia90
 320884216
 Yevgeni Dysin
 
-I discussed the exercise with: Ben Faingold
-
-To answer the questions I used to following sources:
-    https://docs.python.org/3/
-    Apress Pro Python 2nd Edition
+ben_f
+208482604
+Ben Faingold
 
 ===============================
 =  README for ex9: Asteroids  =
 ===============================
 
-Simple asteroids game implementation using the turtle module to draw the game graphics.
+===================
+=  Websites used  =
+===================
+
+https://docs.python.org/3/library/random.html
 
 ============
-=  Usage:  =
+=  Usage   =
 ============
 
+To run this game, enter the following command in the command line:
 python3 asteroids_main.py <asteroids_amount>
 
+The game uses the TkInter GUI package. The ship, asteroids and even torpedos
+are represented by turtles from the turtle module.
+
 ==================
-=  Description:  =
+=  Description   =
 ==================
 
-Simple asteroids game where the player controls a ship in a field of asteroids. The main object of the game is to shoot
-the asteroids while trying to avoid collisions with them. When a torpedo hits one of the asteroids it splits it into
-smaller ones.
+Simple asteroids game where the player controls a ship in a field of asteroids.
+The main objective of the game is to shoot the asteroids while trying to avoid
+collisions with them. When a torpedo hits one of the asteroids it splits it
+into smaller ones.
 
 =============================
-=  List of submitted files: =
+=  List of submitted files  =
 =============================
 
 README		        This file
@@ -42,3 +49,6 @@ torpedo.py          Contains the Torpedo object class implementation
 ======================
 =  Special Comments  =
 ======================
+
+The 3 considerations we've had while working on this game were:
+1)
