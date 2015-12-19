@@ -5,8 +5,7 @@ from asteroid import Asteroid
 from torpedo import Torpedo
 from operator import add
 from math import sqrt
-from random import \
-    randint  # Add this to README: https://docs.python.org/3/library/random.html
+from random import randint  # Add this to README: https://docs.python.org/3/library/random.html
 
 DEFAULT_ASTEROIDS_NUM = 5
 
@@ -213,6 +212,7 @@ class GameRunner:
 
         if self._screen.should_end():
             self.exit_game(self.QUIT_TITLE, self.QUIT_MSG)
+
 
 def main(amnt):
     """
