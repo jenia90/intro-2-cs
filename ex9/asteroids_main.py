@@ -198,6 +198,7 @@ class GameRunner:
                 self.ship_lives -= 1
                 self._screen.show_message(self.HIT_TITLE, self.HIT_MSG)
                 self.remove_asteroid(asteroid)
+                continue
 
             ast_size = asteroid.get_size()
 
