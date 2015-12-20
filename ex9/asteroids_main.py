@@ -248,6 +248,11 @@ class GameRunner:
 
         # Exit game and show win message when all asteroids are destroyed
         if not self.asteroids:
+            # There might be case when the last asteroid is gone and the ship
+            # also has no lives left
+            if self.ship_lives == 0:
+                self._screen.show_message(self.LOST_TITLE, self.LOST_MSG)
+
             self.exit_game(self.WON_TITLE, self.WON_MSG)
 
         # Exit game and show loss message when ship is out of lives
