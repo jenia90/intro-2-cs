@@ -51,4 +51,19 @@ torpedo.py          Contains the Torpedo object class implementation
 ======================
 
 The 3 considerations we've had while working on this game were:
-1)
+1) Some operations like adding, removing objects, generating random position
+   and exiting the game due to 3 different cases (all of these required more
+   than one line of code) were written as functions to simplify the code and
+   shorten it. The alternative was to write these same lines of code multiple
+   times throughout the file asteroids_main.py, which could be cumbersome.
+2) Inside the loop where we check for asteroid-torpedo intersections we were
+   contemplating whether to 'break' or 'continue' the loop when the asteroid
+   was at its smallest size (right before the code for splitting it into 2 new
+   ones). Ultimately we chose to use 'break' because there's no need to
+   continue the loop to check the intersection for a removed asteroid.
+3) We had 2 separate loops for torpedo iterations: First one inside the loop
+   for asteroid iterations (to check for intersections), and then another one
+   outside of it (to update torpedo parameters). The reason for this separation
+   is not only for clarity, but also to avoid having multiple torpedo updates
+   during one frame in addition to 2 removals of a torpedo in one scope due to
+   2 different reasons.

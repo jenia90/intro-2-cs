@@ -25,7 +25,7 @@ class GameRunner:
     QUIT_TITLE, QUIT_MSG = "Afraid of space?", \
                            "You've decided to cowardly quit, exiting now."
     X, Y = 0, 1
-    INIT_SHIP_POS, INIT_SHIP_VELOCITY = (-100, 0), (1, 0)
+    INIT_SHIP_VELOCITY = (1, 0)
     ROTATE_LEFT, ROTATE_RIGHT = 7, -7
     AST_VEL_MAX, AST_VEL_MIN = 5, 1
     INIT_AST_SIZE = 3
@@ -45,24 +45,18 @@ class GameRunner:
         self.screen_dist = self.screen_max[self.X] - self.screen_min[self.X], \
                            self.screen_max[self.Y] - self.screen_min[self.Y]
 
-        self.ship = Ship(self.INIT_SHIP_POS, self.INIT_SHIP_VELOCITY)
+        self.ship = Ship(self.get_random_position(), self.INIT_SHIP_VELOCITY)
         self.asteroids = []
 
         # This section of code creates a list of asteroid objects with random
         # location and velocity parameters
         for i in range(asteroids_amnt):
             # Generates random values for asteroid object location
-            asteroid_pos = randint(self.screen_min[self.X],
-                                   self.screen_max[self.X]), \
-                           randint(self.screen_min[self.Y],
-                                   self.screen_max[self.Y]),
+            asteroid_pos = self.get_random_position()
 
             # Asteroid's position shouldn't be the same as the ship's
-            while asteroid_pos == self.INIT_SHIP_POS:
-                asteroid_pos = randint(self.screen_min[self.X],
-                                       self.screen_max[self.X]), \
-                               randint(self.screen_min[self.Y],
-                                       self.screen_max[self.Y])
+            while asteroid_pos == self.ship.get_position():
+                asteroid_pos = self.get_random_position()
 
             # Generates random values for asteroid object speed on x and y axis
             asteroid_vel = randint(self.AST_VEL_MIN, self.AST_VEL_MAX), \
@@ -87,6 +81,14 @@ class GameRunner:
         # Set the timer to go off again
         self._screen.update()
         self._screen.ontimer(self._do_loop, 5)
+
+    def get_random_position(self):
+        """
+        Generates random position based on screen's limits
+        :return: Random position
+        """
+        return randint(self.screen_min[self.X], self.screen_max[self.X]), \
+               randint(self.screen_min[self.Y], self.screen_max[self.Y])
 
     def get_new_coords(self, velocity, old_coords):
         """
@@ -207,6 +209,8 @@ class GameRunner:
                     # Split the asteroid into 2 smaller ones
                     # Remove original asteroid
                     self.remove_asteroid(asteroid)
+                    # Removes the torpedo after it hit the asteroid
+                    self.remove_torpedo(self.torpedos.index(torpedo), torpedo)
 
                     if i == 0:
                         # Iteration can be terminated if the removed
@@ -214,27 +218,24 @@ class GameRunner:
                         break
 
                     # Calculate new velocity
-                    den = sqrt(ast_vel[self.X] ** 2 + ast_vel[self.Y] ** 2)
                     nom = map(add, ast_vel, torpedo.get_velocity())
-                    new_vel = tuple(v / den for v in nom)
+                    den = sqrt(ast_vel[self.X] ** 2 + ast_vel[self.Y] ** 2)
+                    # Nominator / Denominator
+                    n_vel = tuple(v / den for v in nom)
                     # Create new asteroids
-                    self.add_asteroid(ast_pos, new_vel, i)
+                    self.add_asteroid(ast_pos, n_vel, i)
                     # Second asteroid with the opposing velocity
-                    self.add_asteroid(ast_pos, tuple(v * -1 for v in new_vel),
-                                      i)
-
-                    # Removes the torpedo after it hit the asteroid
-                    self.remove_torpedo(self.torpedos.index(torpedo), torpedo)
+                    self.add_asteroid(ast_pos, tuple(v * -1 for v in n_vel), i)
 
         # This section of code updates torpedos parameters
         for torpedo in self.torpedos:
-            torp_x, torp_y = torpedo.get_position()
-            self._screen.draw_torpedo(torpedo, torp_x, torp_y,
+            t_pos = torpedo.get_position()
+            self._screen.draw_torpedo(torpedo, t_pos[self.X], t_pos[self.Y],
                                       torpedo.get_heading())
 
             # Move torpedo
             torpedo.set_position(self.get_new_coords(torpedo.get_velocity(),
-                                                     (torp_x, torp_y)))
+                                                     t_pos))
 
             # Decrease lifespan of the torpedo
             torp_index = self.torpedos.index(torpedo)
