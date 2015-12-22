@@ -156,9 +156,6 @@ class GameRunner:
                                self.ship.get_heading())
         ship_vel = self.ship.get_velocity()
 
-        # Move ship
-        self.ship.set_position(self.get_new_coords(ship_vel, ship_pos))
-
         # Rotate ship to the left
         if self._screen.is_left_pressed():
             self.ship.set_heading(self.ship.get_heading() + self.ROTATE_LEFT)
@@ -186,9 +183,6 @@ class GameRunner:
             self._screen.draw_asteroid(asteroid,
                                        ast_pos[self.X], ast_pos[self.Y])
             ast_vel = asteroid.get_velocity()
-
-            # Move asteroid
-            asteroid.set_position(self.get_new_coords(ast_vel, ast_pos))
 
             # From here till the end of the loop, the code handles
             # intersections (if any) of the asteroid with the ship or with a
@@ -228,6 +222,9 @@ class GameRunner:
                     # Second asteroid with the opposing velocity
                     self.add_asteroid(ast_pos, tuple(v * -1 for v in n_vel), i)
 
+            # Move asteroid
+            asteroid.set_position(self.get_new_coords(ast_vel, ast_pos))
+
         # This section of code updates torpedos parameters
         for torpedo in self.torpedos:
             t_pos = torpedo.get_position()
@@ -257,6 +254,9 @@ class GameRunner:
         # Exit game on request
         if self._screen.should_end():
             self.exit_game(self.QUIT_TITLE, self.QUIT_MSG)
+
+        # Move ship
+        self.ship.set_position(self.get_new_coords(ship_vel, ship_pos))
 
 
 def main(amnt):
