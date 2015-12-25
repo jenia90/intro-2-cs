@@ -17,38 +17,60 @@ def read_article_links(file_name='links_demo.txt'):
         return [tuple(article.strip() for article in articles.split('\t'))
                 for articles in file.readlines()]
 
+
 class Article:
     """
     Article object definition
     """
     def __init__(self, name):
-        self.name = name
-        self.article_collection = []
+        self.__name = name
+        self.__neighbors = set()
 
     def get_name(self):
-        return self.name
+        return self.__name
 
     def add_neighbor(self, neighbor):
-        pass
+        self.__neighbors.add(neighbor)
 
     def get_neighbors(self):
-        pass
+        return self.__neighbors
 
     def __repr__(self):
-        pass
+        return str(self.__name) + str([neighbor for neighbor in self.__neighbors])
 
     def __len__(self):
-        pass
+        return len(self.__neighbors)
 
     def __contains__(self, article):
-        pass
+        return True if article in self.__neighbors else False
+
 
 class WikiNetwork:
     """
     WikiNetwork object definition
     """
     def __init__(self, link_list=[]):
-        self.link_lst = link_list
+        self.__article_dict = self.__create_network(link_list)
+        print(self.__article_dict)
+        # set(self.__add_article(article, neighbor)
+        #                         for article, neighbor in link_list)
+
+    def __create_network(self, links_list=[]):
+        article_dict = {Article(article): neighbor
+                               for article, neighbor in links_list}
+        print({article.add_neighbor(neighbor): neighbor
+                for article, neighbor in article_dict.items()})
+
+        for article, neighbor in article_dict.items():
+            del article_dict[article]
+            article = article.add_neighbor(neighbor)
+            article_dict[article] = neighbor
+            #TODO: Finish implementation
+
+        return {article.add_neighbor(neighbor): neighbor
+                for article, neighbor in article_dict.items()}
+
+
 
     def update_network(self, link_list):
         pass
@@ -70,3 +92,5 @@ class WikiNetwork:
 
     def __getitem__(self, article_name):
         pass
+
+WikiNetwork(read_article_links())
