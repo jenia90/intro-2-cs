@@ -50,27 +50,22 @@ class WikiNetwork:
     WikiNetwork object definition
     """
     def __init__(self, link_list=[]):
+        """
+        Initializes the WikiNetwork object
+        :param link_list: a linked list of articles as tuple
+        """
         self.__article_dict = self.__create_network(link_list)
-        print(self.__article_dict)
-        # set(self.__add_article(article, neighbor)
-        #                         for article, neighbor in link_list)
 
     def __create_network(self, links_list=[]):
-        article_dict = {Article(article): neighbor
-                               for article, neighbor in links_list}
-        print({article.add_neighbor(neighbor): neighbor
-                for article, neighbor in article_dict.items()})
+        article_dict = {}
+        article_obj_list_temp = [(Article(article), neighbor)
+                               for article, neighbor in links_list]
 
-        for article, neighbor in article_dict.items():
-            del article_dict[article]
-            article = article.add_neighbor(neighbor)
+        for article, neighbor in article_obj_list_temp:
+            article.add_neighbor(neighbor)
             article_dict[article] = neighbor
-            #TODO: Finish implementation
 
-        return {article.add_neighbor(neighbor): neighbor
-                for article, neighbor in article_dict.items()}
-
-
+        return article_dict
 
     def update_network(self, link_list):
         pass
@@ -92,5 +87,18 @@ class WikiNetwork:
 
     def __getitem__(self, article_name):
         pass
+
+    def page_rank(self, iters, d=0.9):
+        pass
+
+    def jaccard_index( self , article_name):
+        pass
+
+    def travel_path_iterator(self, article_name):
+        pass
+
+    def friends_by_depth(self, article_name, depth):
+        pass
+
 
 WikiNetwork(read_article_links())
