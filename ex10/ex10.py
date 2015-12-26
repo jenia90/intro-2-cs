@@ -7,7 +7,7 @@
 ##################################################
 
 
-def read_article_links(file_name='links_demo.txt'):
+def read_article_links(file_name='links.txt'):
     """
     Reads a list of articles from a file and returns a tuple
     :param file_name: file path as string
@@ -56,7 +56,7 @@ class Article:
 
         :return:
         """
-        return self.__name, [n for n in self.__neighbors]
+        return self.__name, str([n for n in self.__neighbors])
 
     def __len__(self):
         """
@@ -87,47 +87,76 @@ class WikiNetwork:
         self.update_network(link_list)
 
     def update_network(self, link_list):
+        """
+        Updates the WikiNetwork database according to the passed in list of
+        links
+        :param link_list: list of links as tuple
+        :type tuple(article_name, neighbor)
+        """
         for article, neighbor in link_list:
-            pass # TODO: Finish implementation!
-
-        '''
-        for article, neighbor in link_list:
-            if article in self.__article_dict.keys():
-                self.__article_dict[article].append(neighbor)
-            else:
-                self.__article_dict[article] = []
-
-        for article in self.__article_dict.keys():
-            art = Article(article)
-            for neighbor in self.__article_dict[article]:
-                if not art.__contains__(neighbor):
-                    art.add_neighbor(neighbor)
-
-            self.__article_dict[art] = self.__article_dict.pop(article)
-        '''
+            if article not in self.__article_dict:
+                self.__article_dict[article] = Article(article)
+            self.__article_dict[article].add_neighbor(neighbor)
 
     def get_articles(self):
-        return [article.get_neighbors() for article in self.__article_dict.keys()]
+        """
+
+        :return:
+        """
+        return [article.get_neighbors() for article in self.__article_dict.values()]
 
     def get_titles(self):
-        return [article.get_name() for article in self.__article_dict.keys()]
+        """
+
+        :return:
+        """
+        return self.__article_dict.keys()
 
     def __contains__(self, article_name):
+        """
+
+        :param article_name:
+        :return:
+        """
         return article_name in self.get_titles()
 
     def __len__(self):
+        """
+
+        :return:
+        """
         return len(self.__article_dict)
 
     def __repr__(self):
-        return str({article.get_name(): article.__repr__()
-                for article in self.__article_dict.keys()})
+        """
+
+        :return:
+        """
+        return str({key: value.__repr__()
+                for key, value in self.__article_dict.items()})
 
     def __getitem__(self, article_name):
+        """
+
+        :param article_name:
+        :return:
+        """
         if self.__contains__(article_name):
-            return self.__article_dict.fromkeys()
+            return self.__article_dict[article_name]
+        else:
+            raise KeyError(article_name)
+
 
     def page_rank(self, iters, d=0.9):
-        pass
+        return self.__page_rank_helper(iters, d)
+
+    def __page_rank_helper(self, iters, d, ranked_dict={}):
+        if iters == 0:
+            return ranked_dict
+
+        else:
+            pass
+            # ranked_dict =
 
     def jaccard_index( self , article_name):
         pass
@@ -137,6 +166,5 @@ class WikiNetwork:
 
     def friends_by_depth(self, article_name, depth):
         pass
-
 
 print(WikiNetwork(read_article_links()))
