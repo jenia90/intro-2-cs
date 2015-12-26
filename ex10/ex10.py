@@ -23,26 +23,55 @@ class Article:
     Article object definition
     """
     def __init__(self, name):
-        self.__name = name
+        """
+
+        :param name:
+        """
+        self.__name = str(name)
         self.__neighbors = set()
 
     def get_name(self):
+        """
+
+        :return:
+        """
         return self.__name
 
     def add_neighbor(self, neighbor):
+        """
+
+        :param neighbor:
+        """
         self.__neighbors.add(neighbor)
 
     def get_neighbors(self):
+        """
+
+        :return:
+        """
         return self.__neighbors
 
     def __repr__(self):
-        return str(self.__name) + str([neighbor for neighbor in self.__neighbors])
+        """
+
+        :return:
+        """
+        return self.__name, [n for n in self.__neighbors]
 
     def __len__(self):
+        """
+
+        :return:
+        """
         return len(self.__neighbors)
 
     def __contains__(self, article):
-        return True if article in self.__neighbors else False
+        """
+
+        :param article:
+        :return:
+        """
+        return  article in self.__neighbors
 
 
 class WikiNetwork:
@@ -54,39 +83,48 @@ class WikiNetwork:
         Initializes the WikiNetwork object
         :param link_list: a linked list of articles as tuple
         """
-        self.__article_dict = self.__create_network(link_list)
-
-    def __create_network(self, links_list=[]):
-        article_dict = {}
-        article_obj_list_temp = [(Article(article), neighbor)
-                               for article, neighbor in links_list]
-
-        for article, neighbor in article_obj_list_temp:
-            article.add_neighbor(neighbor)
-            article_dict[article] = neighbor
-
-        return article_dict
+        self.__article_dict = {}
+        self.update_network(link_list)
 
     def update_network(self, link_list):
-        pass
+        for article, neighbor in link_list:
+            pass # TODO: Finish implementation!
+
+        '''
+        for article, neighbor in link_list:
+            if article in self.__article_dict.keys():
+                self.__article_dict[article].append(neighbor)
+            else:
+                self.__article_dict[article] = []
+
+        for article in self.__article_dict.keys():
+            art = Article(article)
+            for neighbor in self.__article_dict[article]:
+                if not art.__contains__(neighbor):
+                    art.add_neighbor(neighbor)
+
+            self.__article_dict[art] = self.__article_dict.pop(article)
+        '''
 
     def get_articles(self):
-        pass
+        return [article.get_neighbors() for article in self.__article_dict.keys()]
 
     def get_titles(self):
-        pass
+        return [article.get_name() for article in self.__article_dict.keys()]
 
     def __contains__(self, article_name):
-        pass
+        return article_name in self.get_titles()
 
     def __len__(self):
-        pass
+        return len(self.__article_dict)
 
     def __repr__(self):
-        pass
+        return str({article.get_name(): article.__repr__()
+                for article in self.__article_dict.keys()})
 
     def __getitem__(self, article_name):
-        pass
+        if self.__contains__(article_name):
+            return self.__article_dict.fromkeys()
 
     def page_rank(self, iters, d=0.9):
         pass
@@ -101,4 +139,4 @@ class WikiNetwork:
         pass
 
 
-WikiNetwork(read_article_links())
+print(WikiNetwork(read_article_links()))
