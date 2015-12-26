@@ -143,20 +143,31 @@ class WikiNetwork:
         """
         if self.__contains__(article_name):
             return self.__article_dict[article_name]
+        '''
         else:
             raise KeyError(article_name)
-
+        '''
 
     def page_rank(self, iters, d=0.9):
-        return self.__page_rank_helper(iters, d)
+        rnkd_dict = {article: (1 - d)
+                       for article in self.__article_dict.values()}
+        return [article.get_name() + "(=%d)"
+                for article, pr in self.__page_rank_helper(iters, d, rnkd_dict)]
 
     def __page_rank_helper(self, iters, d, ranked_dict={}):
         if iters == 0:
             return ranked_dict
 
         else:
-            pass
+            for article in ranked_dict.keys():
+                out_pr = d / article.__len__()
+                for neighbor in article.get_neighbors():
+                    ranked_dict[self.__getitem__(neighbor)] += out_pr
+
+            ranked_dict = {article: d * pr**iters for article, pr in self.__page_rank_helper(iters-1, d, ranked_dict)}
             # ranked_dict =
+
+        return ranked_dict
 
     def jaccard_index( self , article_name):
         pass
@@ -167,4 +178,4 @@ class WikiNetwork:
     def friends_by_depth(self, article_name, depth):
         pass
 
-print(WikiNetwork(read_article_links()))
+print(WikiNetwork(read_article_links()).page_rank(4))
