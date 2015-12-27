@@ -78,6 +78,8 @@ class WikiNetwork:
     """
     WikiNetwork object definition
     """
+    REMAINDER = 0.1
+
     def __init__(self, link_list=[]):
         """
         Initializes the WikiNetwork object
@@ -144,41 +146,34 @@ class WikiNetwork:
         """
         if self.__contains__(article_name):
             return self.__article_dict[article_name]
-        '''
         else:
             raise KeyError(article_name)
-        '''
 
     def page_rank(self, iters, d=0.9):
-        rnkd_dict = {article: (1 - d)
-                       for article in self.__article_dict.values()}
+        rnkd_dict = {article: 1
+                       for article in self.__article_dict.keys()}
 
         for i in range(iters):
-            for article in rnkd_dict.keys():
-                rnkd_dict[article] = d * (rnkd_dict[article]**i/article.__len__()) + (1-d)
+            for article_name in rnkd_dict.keys():
+                article = self.__getitem__(article_name)
+                out_rank = (rnkd_dict[article_name] / article.__len__())
+                charity = self.REMAINDER / article.__len__()
 
-        print(sorted([(article.get_name(), rank) for article, rank in rnkd_dict.items()], key=lambda x: x[1])[::-1])
-        '''
-        rnkd_dict = {article: (1 - d)
-                       for article in self.__article_dict.values()}
-        return [article.get_name() + "(=%d)"
-                for article, pr in self.__page_rank_helper(iters, d, rnkd_dict)]
+                for neighbor in rnkd_dict.keys():
+                    if neighbor in article.get_neighbors():
+                        rnkd_dict[neighbor] += out_rank + charity
+                    else:
+                        rnkd_dict[neighbor] += charity
+        # TODO: FIX YOUR SHIT!
+                '''
+                for artcle in rnkd_dict.keys():
+                    if artcle != article_name:
+                        rnkd_dict[artcle] += charity
+                '''
 
-    def __page_rank_helper(self, iters, d, ranked_dict={}):
-        if iters == 0:
-            return ranked_dict
-
-        else:
-            for article in ranked_dict.keys():
-                out_pr = d / article.__len__()
-                for neighbor in article.get_neighbors():
-                    ranked_dict[self.__getitem__(neighbor)] += out_pr
-
-            ranked_dict = {article: d * pr**iters for article, pr in self.__page_rank_helper(iters-1, d, ranked_dict)}
-            # ranked_dict =
-
-        return ranked_dict
-        '''
+        return sorted([(article, d * rank + (1 - d))
+                       for article, rank in rnkd_dict.items()],
+                      key=lambda x: (-x[1], x[0]))
 
     def jaccard_index( self , article_name):
         pass
@@ -189,4 +184,4 @@ class WikiNetwork:
     def friends_by_depth(self, article_name, depth):
         pass
 
-print(WikiNetwork(read_article_links()).page_rank(4))
+print(WikiNetwork(read_article_links()).page_rank(50))
