@@ -56,7 +56,7 @@ class Article:
 
         :return:
         """
-        return self.__name, str([n for n in self.__neighbors])
+        return str(self.__name + str([n for n in self.__neighbors]))
 
     def __len__(self):
         """
@@ -103,7 +103,8 @@ class WikiNetwork:
 
         :return:
         """
-        return [article.get_neighbors() for article in self.__article_dict.values()]
+        return [article.get_neighbors()
+                for article in self.__article_dict.values()]
 
     def get_titles(self):
         """
@@ -151,6 +152,15 @@ class WikiNetwork:
     def page_rank(self, iters, d=0.9):
         rnkd_dict = {article: (1 - d)
                        for article in self.__article_dict.values()}
+
+        for i in range(iters):
+            for article in rnkd_dict.keys():
+                rnkd_dict[article] = d * (rnkd_dict[article]**i/article.__len__()) + (1-d)
+
+        print(sorted([(article.get_name(), rank) for article, rank in rnkd_dict.items()], key=lambda x: x[1])[::-1])
+        '''
+        rnkd_dict = {article: (1 - d)
+                       for article in self.__article_dict.values()}
         return [article.get_name() + "(=%d)"
                 for article, pr in self.__page_rank_helper(iters, d, rnkd_dict)]
 
@@ -168,6 +178,7 @@ class WikiNetwork:
             # ranked_dict =
 
         return ranked_dict
+        '''
 
     def jaccard_index( self , article_name):
         pass
