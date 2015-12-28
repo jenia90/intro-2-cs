@@ -56,7 +56,7 @@ class Article:
 
         :return:
         """
-        return str(self.__name + str(self.__neighbors))
+        return self.__name, list(self.__neighbors)
 
     def __len__(self):
         """
@@ -119,7 +119,7 @@ class WikiNetwork:
         :param article_name:
         :return:
         """
-        return article_name in self.get_titles()
+        return article_name in self.__article_dict.keys()
 
     def __len__(self):
         """
@@ -144,10 +144,14 @@ class WikiNetwork:
         """
         if self.__contains__(article_name):
             return self.__article_dict[article_name]
-        else:
-            raise KeyError(article_name)
 
     def page_rank(self, iters, d=0.9):
+        """
+
+        :param iters:
+        :param d:
+        :return:
+        """
         rnkd_dict = {article: 1
                        for article in self.__article_dict}
 
@@ -170,6 +174,11 @@ class WikiNetwork:
                                               key=lambda x: (-x[1], x[0]))]
 
     def jaccard_index(self , article_name):
+        """
+
+        :param article_name:
+        :return:
+        """
         if article_name not in self.__article_dict:
             return None
 
@@ -190,10 +199,24 @@ class WikiNetwork:
                        for item in sorted(index_dict.items(), key=lambda x: (-x[1], x[0]))]
 
     def travel_path_iterator(self, article_name):
+        """
+
+        :param article_name:
+        :return:
+        """
         pass
 
     def friends_by_depth(self, article_name, depth):
+        """
+
+        :param article_name:
+        :param depth:
+        :return:
+        """
         pass
+
+
+print(WikiNetwork(read_article_links()).__repr__())
 # Basic test which should result in
 # ['B' (=1.705), 'D' (=1.48), 'C' (=0.175), 'A' (=0.1)]:
 #print(WikiNetwork([('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'),
