@@ -78,8 +78,6 @@ class WikiNetwork:
     """
     WikiNetwork object definition
     """
-    REMAINDER = 0.1
-
     def __init__(self, link_list=[]):
         """
         Initializes the WikiNetwork object
@@ -155,21 +153,12 @@ class WikiNetwork:
 
         for i in range(iters):
             for article_name in rnkd_dict.keys():
-                article = self.__getitem__(article_name)
+                article = self.__article_dict[article_name]
                 out_rank = (rnkd_dict[article_name] / article.__len__())
-                charity = self.REMAINDER / article.__len__()
 
-                for neighbor in rnkd_dict.keys():
-                    if neighbor in article.get_neighbors():
-                        rnkd_dict[neighbor] += out_rank + charity
-                    else:
-                        rnkd_dict[neighbor] += charity
-        # TODO: FIX YOUR SHIT!
-                '''
-                for artcle in rnkd_dict.keys():
-                    if artcle != article_name:
-                        rnkd_dict[artcle] += charity
-                '''
+                for neighbor in article.get_neighbors():
+                    if neighbor in rnkd_dict.keys():
+                        rnkd_dict[neighbor] += out_rank
 
         return sorted([(article, d * rank + (1 - d))
                        for article, rank in rnkd_dict.items()],
