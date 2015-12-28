@@ -148,7 +148,7 @@ class WikiNetwork:
             raise KeyError(article_name)
 
     def page_rank(self, iters, d=0.9):
-        rnkd_dict = {article: 1
+        rnkd_dict = {article: d
                        for article in self.__article_dict.keys()}
 
         for i in range(iters):
@@ -172,5 +172,6 @@ class WikiNetwork:
 
     def friends_by_depth(self, article_name, depth):
         pass
-
-print(WikiNetwork(read_article_links()).page_rank(50))
+print(WikiNetwork([('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'),
+                   ('B', 'D'), ('C', 'D'), ('D', 'B')]).page_rank(2))
+#print(WikiNetwork(read_article_links()).page_rank(50))
