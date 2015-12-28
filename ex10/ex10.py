@@ -56,7 +56,7 @@ class Article:
 
         :return:
         """
-        return str(self.__name + str([n for n in self.__neighbors]))
+        return str(self.__name + str(self.__neighbors))
 
     def __len__(self):
         """
@@ -103,8 +103,8 @@ class WikiNetwork:
 
         :return:
         """
-        return [article.get_neighbors()
-                for article in self.__article_dict.values()]
+        return {article_name: article.get_neighbors()
+                for article_name, article in self.__article_dict.items()}
 
     def get_titles(self):
         """
@@ -148,24 +148,32 @@ class WikiNetwork:
             raise KeyError(article_name)
 
     def page_rank(self, iters, d=0.9):
-        rnkd_dict = {article: d
-                       for article in self.__article_dict.keys()}
+        rnkd_dict = {article: 1
+                       for article in self.__article_dict}
+
+        iter_transfers = {article: 0 for article in rnkd_dict}
 
         for i in range(iters):
-            for article_name in rnkd_dict.keys():
+            for article_name in rnkd_dict:
                 article = self.__article_dict[article_name]
-                out_rank = (rnkd_dict[article_name] / article.__len__())
+                out_rank = d * (rnkd_dict[article_name] / article.__len__())
+                rnkd_dict[article_name] = 1 - d
 
                 for neighbor in article.get_neighbors():
                     if neighbor in rnkd_dict.keys():
-                        rnkd_dict[neighbor] += out_rank
+                        iter_transfers[neighbor] += out_rank
+            for article_name in rnkd_dict:
+                rnkd_dict[article_name] += iter_transfers[article_name]
+                iter_transfers[article_name] = 0
 
-        return sorted([(article, d * rank + (1 - d))
+        return sorted([(article, rank)
                        for article, rank in rnkd_dict.items()],
                       key=lambda x: (-x[1], x[0]))
 
-    def jaccard_index( self , article_name):
-        pass
+    def jaccard_index(self , article_name):
+        indexes = {article: 0
+                       for article in self.__article_dict}
+
 
     def travel_path_iterator(self, article_name):
         pass
@@ -174,6 +182,6 @@ class WikiNetwork:
         pass
 # Basic test which should result in
 # ['B' (=1.705), 'D' (=1.48), 'C' (=0.175), 'A' (=0.1)]:
-print(WikiNetwork([('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'),
-                   ('B', 'D'), ('C', 'D'), ('D', 'B')]).page_rank(2))
-#print(WikiNetwork(read_article_links()).page_rank(50))
+#print(WikiNetwork([('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'),
+                   #('B', 'D'), ('C', 'D'), ('D', 'B')]).page_rank(2))
+print(WikiNetwork(read_article_links()).get_articles())
