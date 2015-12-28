@@ -172,6 +172,8 @@ class WikiNetwork:
 
     def friends_by_depth(self, article_name, depth):
         pass
+# Basic test which should result in
+# ['B' (=1.705), 'D' (=1.48), 'C' (=0.175), 'A' (=0.1)]:
 print(WikiNetwork([('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'),
                    ('B', 'D'), ('C', 'D'), ('D', 'B')]).page_rank(2))
 #print(WikiNetwork(read_article_links()).page_rank(50))
