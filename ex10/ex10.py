@@ -166,14 +166,28 @@ class WikiNetwork:
                 rnkd_dict[article_name] += iter_transfers[article_name]
                 iter_transfers[article_name] = 0
 
-        return sorted([(article, rank)
-                       for article, rank in rnkd_dict.items()],
-                      key=lambda x: (-x[1], x[0]))
+        return [article[0] for article in sorted(rnkd_dict.items(),
+                                              key=lambda x: (-x[1], x[0]))]
 
     def jaccard_index(self , article_name):
-        indexes = {article: 0
-                       for article in self.__article_dict}
+        if article_name not in self.__article_dict:
+            return None
 
+        index_dict = {}
+        art = self.__article_dict[article_name]
+        for article in self.__article_dict.values():
+            if art == article:
+                index_dict[article_name] = 1
+
+            elif article_name in article.get_neighbors():
+                article_neighbors = article.get_neighbors()
+                art_neighbors = art.get_neighbors()
+                index_dict[article.get_name()] = \
+                    len(set.intersection(article_neighbors, art_neighbors)) / \
+                    len(set.union(article_neighbors, art_neighbors))
+
+        return [item[0]
+                       for item in sorted(index_dict.items(), key=lambda x: (-x[1], x[0]))]
 
     def travel_path_iterator(self, article_name):
         pass
@@ -183,5 +197,5 @@ class WikiNetwork:
 # Basic test which should result in
 # ['B' (=1.705), 'D' (=1.48), 'C' (=0.175), 'A' (=0.1)]:
 #print(WikiNetwork([('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'),
-                   #('B', 'D'), ('C', 'D'), ('D', 'B')]).page_rank(2))
-print(WikiNetwork(read_article_links()).get_articles())
+#                   ('B', 'D'), ('C', 'D'), ('D', 'B')]).page_rank(2))
+#print(WikiNetwork(read_article_links()).jaccard_index('Israel'))
