@@ -49,14 +49,21 @@ class Article:
 
         :return:
         """
-        return self.__neighbors
+        return list(self.__neighbors)
+       
+    def get_neighbors_names(self):
+        """
+        
+        :return:
+        """
+        return set(neighbor.get_name() for neighbor in self.__neighbors)
 
     def __repr__(self):
         """
 
         :return:
         """
-        return self.__name, list(self.__neighbors)
+        return str((self.__name, list(self.get_neighbors_names())))
 
     def __len__(self):
         """
@@ -71,7 +78,7 @@ class Article:
         :param article:
         :return:
         """
-        return  article in self.__neighbors
+        return article in self.get_neighbors_names()
 
 
 class WikiNetwork:
@@ -94,24 +101,28 @@ class WikiNetwork:
         :type tuple(article_name, neighbor)
         """
         for article, neighbor in link_list:
-            if article not in self.__article_dict:
+            if article not in self:
                 self.__article_dict[article] = Article(article)
-            self.__article_dict[article].add_neighbor(neighbor)
+
+            neighbor_obj = self.__article_dict.get(neighbor, Article(neighbor))
+            if neighbor not in self:
+                self.__article_dict[neighbor] = neighbor_obj
+
+            self.__article_dict[article].add_neighbor(neighbor_obj)
 
     def get_articles(self):
         """
 
         :return:
         """
-        return {article_name: article.get_neighbors()
-                for article_name, article in self.__article_dict.items()}
+        return list(self.__article_dict.values())
 
     def get_titles(self):
         """
 
         :return:
         """
-        return self.__article_dict.keys()
+        return list(self.__article_dict.keys())
 
     def __contains__(self, article_name):
         """
@@ -119,7 +130,7 @@ class WikiNetwork:
         :param article_name:
         :return:
         """
-        return article_name in self.__article_dict.keys()
+        return article_name in self.__article_dict
 
     def __len__(self):
         """
@@ -133,8 +144,7 @@ class WikiNetwork:
 
         :return:
         """
-        return str({key: value.__repr__()
-                for key, value in self.__article_dict.items()})
+        return str(self.__article_dict)
 
     def __getitem__(self, article_name):
         """
@@ -142,13 +152,18 @@ class WikiNetwork:
         :param article_name:
         :return:
         """
-        if self.__contains__(article_name):
+        if article_name in self:
             return self.__article_dict[article_name]
+        else:
+            raise KeyError(article_name)
 
     def page_rank(self, iters, d=0.9):
         """
-
-        :param iters:
+        Implementation of the Page Rank algorithm for ranking articles by
+        amount of references to them from other articles over a set number of
+        iterations.
+        :param iters: number of iterations to calculate the rank
+        :type int:
         :param d:
         :return:
         """
@@ -157,21 +172,31 @@ class WikiNetwork:
 
         iter_transfers = {article: 0 for article in rnkd_dict}
 
+        # performs given number of iterations to calculate the rank
         for i in range(iters):
+            # iterates over the articles in the ranked dictionary
             for article_name in rnkd_dict:
+                # gets the article object
                 article = self.__article_dict[article_name]
+
+                # calculates the out rank of the article
                 out_rank = d * (rnkd_dict[article_name] / article.__len__())
+
+                # sets the remainder for each rank
                 rnkd_dict[article_name] = 1 - d
 
+                # iterates over the article's neighbors and adds the out rank
                 for neighbor in article.get_neighbors():
-                    if neighbor in rnkd_dict.keys():
-                        iter_transfers[neighbor] += out_rank
+                    if neighbor.get_name() in rnkd_dict.keys():
+                        iter_transfers[neighbor.get_name()] += out_rank
+
+            # iterates over ranked dictionary and adds the sum of ranks
             for article_name in rnkd_dict:
                 rnkd_dict[article_name] += iter_transfers[article_name]
                 iter_transfers[article_name] = 0
 
         return [article[0] for article in sorted(rnkd_dict.items(),
-                                              key=lambda x: (-x[1], x[0]))]
+                                                 key=lambda x: (-x[1], x[0]))]
 
     def jaccard_index(self , article_name):
         """
@@ -179,24 +204,29 @@ class WikiNetwork:
         :param article_name:
         :return:
         """
-        if article_name not in self.__article_dict:
+        if article_name not in self:
+            return None
+
+        if len(self[article_name]) == 0:
             return None
 
         index_dict = {}
         art = self.__article_dict[article_name]
+        art_neighbors = art.get_neighbors_names()
+
         for article in self.__article_dict.values():
             if art == article:
                 index_dict[article_name] = 1
 
-            elif article_name in article.get_neighbors():
-                article_neighbors = article.get_neighbors()
-                art_neighbors = art.get_neighbors()
+            elif article_name in article.get_neighbors_names():
+                article_neighbors = article.get_neighbors_names()
                 index_dict[article.get_name()] = \
                     len(set.intersection(article_neighbors, art_neighbors)) / \
                     len(set.union(article_neighbors, art_neighbors))
 
         return [item[0]
-                       for item in sorted(index_dict.items(), key=lambda x: (-x[1], x[0]))]
+                for item in sorted(index_dict.items(),
+                                   key=lambda item: (-item[1], item[0]))]
 
     def travel_path_iterator(self, article_name):
         """
@@ -204,7 +234,37 @@ class WikiNetwork:
         :param article_name:
         :return:
         """
-        pass
+        if article_name not in self:
+            raise StopIteration
+
+        while article_name:
+            yield article_name
+            article_name = self.__next_article(article_name)
+
+    def __next_article(self, article_name):
+        """
+
+        :param article_name:
+        :return:
+        """
+        out_neighbors = self[article_name].get_neighbors_names()
+        level_dict = {neighbor: 0 for neighbor in out_neighbors}
+        is_ranked = False
+
+        for neighbor in out_neighbors:
+            for article in self.get_articles():
+                if neighbor in article.get_neighbors_names():
+                    level_dict[neighbor] += 1
+
+                    if not is_ranked:
+                        is_ranked = True
+
+        if not is_ranked:
+            return None
+
+        return [item[0]
+                for item in sorted(level_dict.items(),
+                                   key=lambda item: (-item[1], item[0]))][0]
 
     def friends_by_depth(self, article_name, depth):
         """
@@ -213,12 +273,17 @@ class WikiNetwork:
         :param depth:
         :return:
         """
-        pass
+        if article_name not in self:
+            return None
 
+        friends = {article_name}
 
-print(WikiNetwork(read_article_links()).__repr__())
-# Basic test which should result in
-# ['B' (=1.705), 'D' (=1.48), 'C' (=0.175), 'A' (=0.1)]:
-#print(WikiNetwork([('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'),
-#                   ('B', 'D'), ('C', 'D'), ('D', 'B')]).page_rank(2))
-#print(WikiNetwork(read_article_links()).jaccard_index('Israel'))
+        for i in range(depth):
+            for friend in list(friends):
+                neighbors = self.__article_dict.get(friend)
+
+                if neighbors:
+                    for neighbor in neighbors.get_neighbors_names():
+                        friends.add(neighbor)
+
+        return list(friends)
