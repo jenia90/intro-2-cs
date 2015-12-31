@@ -7,18 +7,23 @@ I discussed the exercise with: no one.
 To answer the questions I used to following sources:
     https://docs.python.org/3/
     Apress Pro Python 2nd Edition
+    PACKT Python 3 Object-oriented Programming 2nd Edition
 
 =============================
-=  README for ex7: Recursion
+=  README for ex10: WikiNetwork
 =============================
 
-
+WikiNetwork implementation exercise
 
 ==================
 =  Description:  =
 ==================
 
+In this exercise I implemented 2 Objects:
+Artice - object which represents an article in the Wikipedia Network and all the neighboring
+         articles it points to.
 
+WikiNetwork - object implementing the main logic of the Network and all of its ranking and indexing algorithms
 
 =============================
 =  List of submitted files: =
@@ -30,3 +35,16 @@ ex10.py             Contains all the different functions I was asked to implemen
 ======================
 =  Special Comments  =
 ======================
+Size of network:        4579
+
+Page rank:              ['United_States', 'France', 'Europe']
+
+Jaccard:                ['United_Kingdom', 'Scotland']
+                        ['Israel', 'Yemen']
+                        ['United_States', 'Driving_on_the_left_or_right']
+                        ['Algebra', 'Calculus']
+                        ['World_War_II', 'Adolf_Hitler']
+
+Friends percentage:     0.9172308364271676%
+                        13.758462546407513%
+                        61.69469316444639%
