@@ -78,7 +78,7 @@ class Article:
         :param article:
         :return:
         """
-        return article in self.get_neighbors_names()
+        return article in self.get_neighbors()
 
 
 class WikiNetwork:
@@ -101,8 +101,9 @@ class WikiNetwork:
         :type tuple(article_name, neighbor)
         """
         for article, neighbor in link_list:
+            article_obj = self.__article_dict.get(article, Article(article))
             if article not in self:
-                self.__article_dict[article] = Article(article)
+                self.__article_dict[article] = article_obj
 
             neighbor_obj = self.__article_dict.get(neighbor, Article(neighbor))
             if neighbor not in self:
@@ -218,7 +219,7 @@ class WikiNetwork:
             if art == article:
                 index_dict[article_name] = 1
 
-            elif article_name in article.get_neighbors_names():
+            else:
                 article_neighbors = article.get_neighbors_names()
                 index_dict[article.get_name()] = \
                     len(set.intersection(article_neighbors, art_neighbors)) / \
