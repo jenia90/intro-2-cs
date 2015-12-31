@@ -329,7 +329,7 @@ class WikiNetwork:
             return None
 
         # creates the Set which will hold the friends list
-        friends = set().add(article_name)
+        friends = {article_name}
 
         # 'depth' number of iterations
         for i in range(depth):
