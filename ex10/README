@@ -45,6 +45,6 @@ Jaccard:                ['United_Kingdom', 'Scotland']
                         ['Algebra', 'Calculus']
                         ['World_War_II', 'Adolf_Hitler']
 
-Friends percentage:     0.9172308364271676%
-                        13.758462546407513%
-                        61.69469316444639%
+Friends percentage:     Christopher_Columbus with depth=1:  0.9172308364271676%
+                        DNA with depth=2:                   13.758462546407513%
+                        History with depth=3:               61.69469316444639%
