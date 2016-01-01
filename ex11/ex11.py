@@ -4,7 +4,7 @@ import math
 
 EPSILON = 1e-5
 DELTA = 1e-3
-SEGMENTS = 100
+SEGMENTS = 10
 
 
 def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
@@ -13,7 +13,25 @@ def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
     use the plot_line function in the graph object. 
     f will be plotted to the screen with color c.
     """
-    pass
+    def segment(x):
+        """
+        Calculates the current segment
+        :param x: starting point of the length
+        :type: int
+        :return: returns the calculated segment length
+        """
+        return x + (x1 - x) / num_of_segments
+
+    # set the starting point
+    last_p = (x0, f(x0))
+    # iterate through every value in the range of the function
+    for x in range(x0, x1 + 1):
+        # get current segment length
+        seg = segment(x)
+        # plot the line
+        graph.plot_line(last_p, (seg, f(seg)), c)
+        # update the last point for next iteration
+        last_p = (seg, f(seg))
 
 
 def const_function(c):
@@ -23,7 +41,7 @@ def const_function(c):
     >>> const_function(4)(2)
     4
     """
-    pass
+    return lambda x: c
 
 
 def identity():
@@ -31,7 +49,7 @@ def identity():
     >>>identity()(3)
     3
     """
-    pass
+    return lambda x: x
 
 
 def sin_function():
@@ -39,32 +57,35 @@ def sin_function():
     >>> sinF()(math.pi/2)
     1.0
     """
-    pass
+    return lambda x: math.sin(x)
 
 
 def sum_functions(g, h):
     """return f s.t. f(x) = g(x)+h(x)"""
-    pass
+    return lambda x: g(x) + h(x)
 
 
 def sub_functions(g, h):
     """return f s.t. f(x) = g(x)-h(x)"""
-    pass
+    return lambda x: g(x) - h(x)
 
 
 def mul_functions(g, h):
     """return f s.t. f(x) = g(x)*h(x)"""
-    pass
+    return lambda x: g(x) * h(x)
+
 
 def div_functions(g, h):
     """return f s.t. f(x) = g(x)/h(x)"""
-    pass
+    return lambda x: g(x) / h(x)
+
 
     # The function solve assumes that f is continuous.
     # solve return None in case of no solution
 def solve(f, x0=-10000, x1=10000, epsilon=EPSILON):
     """return the solution to f in the range between x0 and x1"""
     pass
+
 
     # inverse assumes that g is continuous and monotonic. 
 def inverse(g, epsilon=EPSILON):
@@ -74,7 +95,7 @@ def inverse(g, epsilon=EPSILON):
 
 def compose(g, h):
     """return the f which is the compose of g and h """
-    pass
+    return lambda x: g(h(x))
 
 
 def derivative(g, delta=DELTA):
@@ -111,11 +132,11 @@ if __name__ == "__main__":
     master = tk.Tk()
     graph = Graph(master, -10, -10, 10, 10)
     # un-tag the line below after implementation of plot_func
-    # plot_func(graph,example_func,-10,10,SEGMENTS,'red')
+    plot_func(graph,example_func,-10,10,SEGMENTS,'red')
     color_arr = ['black', 'blue', 'red', 'green', 'brown', 'purple',
                  'dodger blue', 'orange']
     # un-tag the lines below after implementation of ex11_func_list
     # for f in ex11_func_list():
-    #     plot_func(graph, f, -10, 10, SEGMENTS, 'red')
+    #    plot_func(graph, f, -10, 10, SEGMENTS, 'red')
 
     master.mainloop()

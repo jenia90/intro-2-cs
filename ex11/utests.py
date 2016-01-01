@@ -11,7 +11,7 @@ class TestEx11(unittest.TestCase):
         self.assertEqual(f(4),17)
         self.assertEqual(f(10),17)
 
-    def identity(self):
+    def test_identity(self):
         f = ex11.identity()
         self.assertEqual(f(7),7)
         self.assertEqual(f(-5),-5)
