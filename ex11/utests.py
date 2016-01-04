@@ -29,6 +29,14 @@ class TestEx11(unittest.TestCase):
         self.assertEqual(f(9),12)
         self.assertEqual(f(1/4),3/4)
 
+    def test_solve(self):
+        f = lambda x: x**3 + x - 1
+        g = lambda x: x**2 - 1
+        solve = ex11.solve(f)
+        self.assertAlmostEqual(solve, 0.68, delta=0.1)
+        solve = ex11.solve(g)
+        self.assertAlmostEqual(solve, -1.00, delta=0.1)
+
     def test_sub(self):
         f = ex11.sub_functions(abs,math.sqrt)
         self.assertEqual(f(9),6)

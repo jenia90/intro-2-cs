@@ -4,7 +4,7 @@ import math
 
 EPSILON = 1e-5
 DELTA = 1e-3
-SEGMENTS = 10
+SEGMENTS = 100
 
 
 def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
@@ -13,6 +13,7 @@ def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
     use the plot_line function in the graph object. 
     f will be plotted to the screen with color c.
     """
+    '''
     def segment(x):
         """
         Calculates the current segment
@@ -21,17 +22,23 @@ def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
         :return: returns the calculated segment length
         """
         return x + (x1 - x) / num_of_segments
-
+    '''
+    #segment = lambda x: x1 + x + (x1 - x0) / num_of_segments
     # set the starting point
-    last_p = (x0, f(x0))
+    prev_p = (x0, f(x0))
+    #seg = x0 + (x1 - x0)/num_of_segments
+    #graph.plot_line(last_p, (x0 + seg, f(x0 + seg)), c)
     # iterate through every value in the range of the function
-    for x in range(x0, x1 + 1):
+    for x in range(x0 + 1, x1 + 1):
         # get current segment length
-        seg = segment(x)
+        # seg = segment(x)
+        next_p = x, f(x)
         # plot the line
-        graph.plot_line(last_p, (seg, f(seg)), c)
+        graph.plot_line(prev_p, next_p, c)
         # update the last point for next iteration
-        last_p = (seg, f(seg))
+        prev_p = next_p
+
+    # TODO: Cleanup plot_func!
 
 
 def const_function(c):
@@ -84,13 +91,35 @@ def div_functions(g, h):
     # solve return None in case of no solution
 def solve(f, x0=-10000, x1=10000, epsilon=EPSILON):
     """return the solution to f in the range between x0 and x1"""
-    pass
+    if f(x0) * f(x1) >= 0:
+        return None
+
+    mid = (x0 + x1) / 2.0
+
+    while abs(x1 - x0) / 2.0 > epsilon:
+        if f(mid) == 0:
+            return mid
+        elif f(x0) * f(mid) < 0:
+            x1 = mid
+        else:
+            x0 = mid
+        mid = (x0 + x1) / 2
+    return mid
 
 
     # inverse assumes that g is continuous and monotonic. 
 def inverse(g, epsilon=EPSILON):
     """return f s.t. f(g(x)) = x"""
-    pass
+    def f(y):
+        bound = 100
+        while True:
+            sol = solve(lambda x: g(x) - y, -bound, bound, epsilon)
+            if sol is not None:
+                return sol
+
+            bound *= 2
+
+    return f
 
 
 def compose(g, h):
@@ -100,7 +129,7 @@ def compose(g, h):
 
 def derivative(g, delta=DELTA):
     """return f s.t. f(x) = g'(x)"""
-    pass
+    return lambda x: (g(x + delta) - g(x)) / delta
 
 
 def definite_integral(f, x0, x1, num_of_segments=SEGMENTS):
@@ -109,12 +138,29 @@ def definite_integral(f, x0, x1, num_of_segments=SEGMENTS):
     >>>definite_integral(const_function(3),-2,3)
     15
     """
-    pass
+    if num_of_segments > 0:
+        segment = (x1 - x0) / num_of_segments
+        s = 0
+        for i in range(1, num_of_segments+1):
+            xi = segment * i + x0
+            xi_prev = segment * (i-1) + x0
+            s += f((xi + xi_prev) / 2)*(xi - xi_prev)
+        return s
 
 
 def integral_function(f, delta=0.01):
     """return F such that F'(x) = f(x)"""
-    pass
+    def F(x):
+        num_of_segments = math.ceil(abs(x) / delta)
+
+        if x > 0:
+            return definite_integral(f, 0, x, num_of_segments)
+        elif x < 0:
+            return -definite_integral(f, x, 0, num_of_segments)
+        else:
+            return 0
+
+    return F
 
 
 def ex11_func_list():
@@ -132,11 +178,11 @@ if __name__ == "__main__":
     master = tk.Tk()
     graph = Graph(master, -10, -10, 10, 10)
     # un-tag the line below after implementation of plot_func
-    plot_func(graph,example_func,-10,10,SEGMENTS,'red')
+    # plot_func(graph,example_func,-10,10,SEGMENTS,'red')
     color_arr = ['black', 'blue', 'red', 'green', 'brown', 'purple',
                  'dodger blue', 'orange']
     # un-tag the lines below after implementation of ex11_func_list
-    # for f in ex11_func_list():
-    #    plot_func(graph, f, -10, 10, SEGMENTS, 'red')
+    for f in ex11_func_list():
+        plot_func(graph, f, -10, 10, SEGMENTS, 'red')
 
     master.mainloop()
