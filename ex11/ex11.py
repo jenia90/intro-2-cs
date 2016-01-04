@@ -13,32 +13,16 @@ def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
     use the plot_line function in the graph object. 
     f will be plotted to the screen with color c.
     """
-    '''
-    def segment(x):
-        """
-        Calculates the current segment
-        :param x: starting point of the length
-        :type: int
-        :return: returns the calculated segment length
-        """
-        return x + (x1 - x) / num_of_segments
-    '''
-    #segment = lambda x: x1 + x + (x1 - x0) / num_of_segments
     # set the starting point
     prev_p = (x0, f(x0))
-    #seg = x0 + (x1 - x0)/num_of_segments
-    #graph.plot_line(last_p, (x0 + seg, f(x0 + seg)), c)
     # iterate through every value in the range of the function
     for x in range(x0 + 1, x1 + 1):
-        # get current segment length
-        # seg = segment(x)
+        # set next point
         next_p = x, f(x)
         # plot the line
         graph.plot_line(prev_p, next_p, c)
         # update the last point for next iteration
         prev_p = next_p
-
-    # TODO: Cleanup plot_func!
 
 
 def const_function(c):
@@ -165,8 +149,29 @@ def integral_function(f, delta=0.01):
 
 def ex11_func_list():
     """return a list of functions as a solution to q.12"""
-    pass
+    id_pow = mul_functions(identity(), identity())
+    cos = derivative(sin_function())
+    func_list = []
 
+    func_list.append(const_function(4))
+
+    func_list.append(sum_functions(sin_function(), const_function(4)))
+
+    func_list.append(compose(sin_function(), sum_functions(const_function(4), identity())))
+
+    func_list.append(mul_functions(
+            sin_function(), div_functions(
+                    mul_functions(id_pow,const_function(2)),const_function(100))))
+
+    func_list.append(div_functions(sin_function(),
+                           sum_functions(cos, const_function(2))))
+
+    func_list.append(integral_function(
+            sub_functions(sum_functions(id_pow, identity()), const_function(3))))
+
+    func_list.append(inverse(mul_functions(id_pow,identity())))
+
+    return func_list
 
 # function that genrate the figure in the ex description
 def example_func(x):
