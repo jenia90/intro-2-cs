@@ -1,10 +1,17 @@
-#!/usr/bin/env python3
+##################################################
+#  FILE: ex11.py
+#  WRITER : yevgeni, jenia90, 320884216
+#  EXERCISE : intro2cs ex11 2015-2016
+#  DESCRIPTION :  Implemetations of mathematical functions
+#                   using 2nd order programming paradigm
+##################################################
 
 import math
 
 EPSILON = 1e-5
 DELTA = 1e-3
 SEGMENTS = 100
+INIT_BOUND = 100
 
 
 def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
@@ -16,11 +23,14 @@ def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
     segment = (x1 - x0) / num_of_segments
     # set the starting point
     prev_p = x0, f(x0)
+    # set initial next point
     next_p = x0 + segment
-    # iterate through every value in the range of the function
+    # plot lines while next point doesn't exceed the function bound
     while next_p <= x1:
         graph.plot_line(prev_p, (next_p, f(next_p)), c)
+        # update previous point for next iteration
         prev_p = next_p, f(next_p)
+        # update next point for next iteration
         next_p += segment
 
 
@@ -77,6 +87,8 @@ def solve(f, x0=-10000, x1=10000, epsilon=EPSILON):
     if f(x0) * f(x1) >= 0:
         return None
 
+    # these next lines of code calculate the root of the function using
+    # bisection method
     mid = (x0 + x1) / 2.0
 
     while abs(x1 - x0) / 2.0 > epsilon:
@@ -94,13 +106,13 @@ def solve(f, x0=-10000, x1=10000, epsilon=EPSILON):
 def inverse(g, epsilon=EPSILON):
     """return f s.t. f(g(x)) = x"""
     def f(y):
-        bound = 100
+        bound = INIT_BOUND
         while True:
             sol = solve(lambda x: g(x) - y, -bound, bound, epsilon)
             if sol is not None:
                 return sol
 
-            bound *= 2
+            bound += bound
 
     return f
 
@@ -122,8 +134,10 @@ def definite_integral(f, x0, x1, num_of_segments=SEGMENTS):
     15
     """
     if num_of_segments > 0:
+        # get the rectangle width
         segment = (x1 - x0) / num_of_segments
         s = 0
+        # iterate through the range and calculate the Riemann Sum
         for i in range(1, num_of_segments+1):
             xi = segment * i + x0
             xi_prev = segment * (i-1) + x0
@@ -152,22 +166,34 @@ def ex11_func_list():
     cos = derivative(sin_function())
     func_list = []
 
+    # f(x) = 4
     func_list.append(const_function(4))
 
+    # f(x) = sin(x) + 4
     func_list.append(sum_functions(sin_function(), const_function(4)))
 
-    func_list.append(compose(sin_function(), sum_functions(const_function(4), identity())))
+    # f(x) = sin(x + 4)
+    func_list.append(compose(sin_function(),
+                             sum_functions(identity(), const_function(4))))
 
+    # f(x) = sin(x) * (x^2) / 100
     func_list.append(mul_functions(
             sin_function(), div_functions(
                     mul_functions(id_pow,const_function(2)),const_function(100))))
 
+    # f(x) = sin(x) / (cos(x) + 2)
     func_list.append(div_functions(sin_function(),
                            sum_functions(cos, const_function(2))))
 
+    # f(x) = integral(x^2 + x -3)
     func_list.append(integral_function(
             sub_functions(sum_functions(id_pow, identity()), const_function(3))))
 
+    # f(x) = 5 * (sin(cos(x)) - cos(x)
+    func_list.append(mul_functions(const_function(5),
+                                   sub_functions(
+                                           compose(sin_function(), cos), cos)))
+    # f(x) = inverse(x^3)
     func_list.append(inverse(mul_functions(id_pow,identity())))
 
     return func_list
@@ -186,7 +212,7 @@ if __name__ == "__main__":
     color_arr = ['black', 'blue', 'red', 'green', 'brown', 'purple',
                  'dodger blue', 'orange']
     # un-tag the lines below after implementation of ex11_func_list
-    for f in ex11_func_list():
-        plot_func(graph, f, -10, 10, SEGMENTS, 'red')
+    for f in range(len(color_arr)):
+        plot_func(graph, ex11_func_list()[f], -10, 10, SEGMENTS, color_arr[f])
 
     master.mainloop()

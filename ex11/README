@@ -1,0 +1,34 @@
+jenia90
+320884216
+Yevgeni Dysin
+
+I discussed the exercise with: no one.
+
+To answer the questions I used to following sources:
+    https://docs.python.org/3/
+    Apress Pro Python 2nd Edition
+
+=============================
+=  README for ex11: 2nd Order Programming
+=============================
+
+Implementations of 2nd order functions
+
+==================
+=  Description:  =
+==================
+
+In this exercise i was asked to implemnt different mathematical functions.
+Most of the functions were implemented using function nesting and python's ability to return a function
+as a return type.
+
+=============================
+=  List of submitted files: =
+=============================
+
+README		        This file
+ex11.py             Contains all the different functions I was asked to implement
+
+======================
+=  Special Comments  =
+======================
