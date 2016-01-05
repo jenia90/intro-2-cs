@@ -13,16 +13,15 @@ def plot_func(graph, f, x0, x1, num_of_segments=SEGMENTS, c='black'):
     use the plot_line function in the graph object. 
     f will be plotted to the screen with color c.
     """
+    segment = (x1 - x0) / num_of_segments
     # set the starting point
-    prev_p = (x0, f(x0))
+    prev_p = x0, f(x0)
+    next_p = x0 + segment
     # iterate through every value in the range of the function
-    for x in range(x0 + 1, x1 + 1):
-        # set next point
-        next_p = x, f(x)
-        # plot the line
-        graph.plot_line(prev_p, next_p, c)
-        # update the last point for next iteration
-        prev_p = next_p
+    while next_p <= x1:
+        graph.plot_line(prev_p, (next_p, f(next_p)), c)
+        prev_p = next_p, f(next_p)
+        next_p += segment
 
 
 def const_function(c):
